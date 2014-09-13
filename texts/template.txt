@@ -1,0 +1,5 @@
+--------------------------------------------------------------
+
+Lines for freg texts should be no longer than this line (62).
+Line of 62 character will cause newline after itself.
+There should be no more than 32 lines.

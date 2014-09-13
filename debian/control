@@ -1,0 +1,13 @@
+Source: freg
+Section: games
+Priority: extra
+Maintainer: Alexander Kromm <mmaulwurff@gmail.com>
+Build-depends: debhelper, libc6-dev, libncursesw5-dev, qtbase5-dev (>= 5.3), qt5-default
+Standards-Version: 3.8.4
+Homepage: http://mmaulwurff.github.io/FREG/html/index.html
+
+Package: freg
+Architecture: any
+Depends: libc6, libncursesw5, libqt5core5a
+Description: Free-Roaming Elementary Game
+ Game with open interactive 3d world and text graphics, much like other sandbox games, fast and compact, with its own features.

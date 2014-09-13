@@ -1,0 +1,1023 @@
+freg (0.3-2) unstable; urgency=medium
+
+  [ Alexander Kromm ]
+  * first commit
+  * Added README.
+  * Inventory (pick & put)
+  * Inventory (pick & push)
+  * Remove codes for 'view' - now view is a char *craft
+  * Removed codes for 'view', now it is a char *craft
+  * License
+
+  [ mmaulwurff ]
+  * first README
+  * comments
+
+  [ Alexander Kromm ]
+  * Delete maps
+  * rmaps
+  * Workbench, minor changes
+  * List of animals
+  * Remove rmaps
+  * Universal spawn function
+  * Table in README
+  * Chest except inventory view
+  * Chest, also all active things system
+  * another file system
+  * Heaps
+  * falling and burning of things
+  * readme change
+  * falling heaps into heaps or chests
+  * pushing
+  * Sounds
+  * Pause
+  * moving one item at once in the inventory
+  * notes
+  * time
+  * lighting
+  * sky with stars, place for clouds and birds
+  * x86
+  * sky fixed
+  * items and views constant system
+  * erasing things system
+  * pushing into chest/pile
+  * workbench and crafting
+  * New milestone, all will be rewritten in Qt.
+
+  [ mmaulwurff ]
+  * started rewriting in c++
+  * new text graphics
+  * graphics improved
+  * visibility ported
+  * everything is put in order
+  * sky, stars and precipitations
+  * sun and moon
+
+  [ unknown ]
+  * first atom and world containing it
+  * moving blocks
+  * dynamic world loading
+
+  [ mmaulwurff ]
+  * everything is put in order
+  * real visibility function. it just works.
+  * some optimization, minor changes
+  * threads and mutex
+  * Block and Dwarf classes constructors.
+  * front view
+  * inventory (started), fixes
+  * inventory
+  * sky
+  * sun and moon
+  * sounds
+  * chests and piles, dropping and getting items
+  * inscribing and telegraph
+  * new name: FREG
+  * Create gh-pages branch via GitHub
+  * saving to file and loading
+  * add saving and loading
+  * make loading and saving bit faster
+  * enlightening
+  * destroy and build things
+  * gravity
+  * inventory features
+  * liquids
+  * temperature
+  * add a bit more logging
+  * add Google+ link
+  * Create gh-pages branch via GitHub
+  * add Google+ link
+  * add swimming, fix movement bugs
+  * add some comments
+  * make less includes, more .cpps
+  * soil and grass
+  * grass destruction
+  * bush and tree
+  * rabbits
+  * bush destruction fix
+  * fix dropping
+  * improve inventory
+  * make world: The Land of Doubts
+  * simplify shred generator
+  * add forest
+  * add water pools and water drying up
+  * optimize walking between shreds
+  * make time step smaller
+  * simplify movements
+  * minor fixes
+  * reorganize lighting: step one
+  * reorganize lighting: step two
+  * lighting: step 3/4
+  * compile way changed
+  * reorganize lighting: step next
+  * add folder for shreds
+  * reorganize light: final step
+  * fixes
+  * code review
+  * update link to early screenshots album
+  * various fixes
+  * const functions
+  * simplify focus
+  * add scenarios for testing needs
+  * remove movement inertia
+  * fixes
+  * hit points at screen
+  * damage and durability
+  * breath HUD and swimming fix
+  * breathing fix
+  * little DirectVisible speed-up
+  * hunger and eating
+  * sand and fixes
+  * weight correct
+  * directories
+  * comment out gettext
+  * compatibility
+  * temporary include
+  * compatibility fix
+  * compatibility fix
+  * number of public methods in screen reduced
+  * jumping fix
+  * Screen::Print order
+  * #inclued <curses.h> now is in screen.h
+  * comments and move getch to Screen
+  * move flushinp() to Screen
+  * NormalUnderground fix
+  * nothing serious
+  * prepare for experiment
+  * reducing memory usage
+  * simplifying lighting
+  * making parameters short
+  * porting threads
+  * create opengl window
+  * continue porting
+  * angles
+  * class Shred. architecture change. not tested
+  * debugging. still stack overflow, i know
+  * it starts now. not tested yet
+  * various bugfixes. yet not stable
+  * restart crash fix, add mocs
+  * update README
+  * update readme
+  * all is ready for graphics
+  * lighting updates
+  * sync repos
+  * The_Land_Of_Doubts_shreds
+  * lakes fix and water drying fix
+  * minor changes: ushort
+  * git rid of null-air, new block save/load system
+  * various regression fixes, compressing shreds data
+  * inventory fixes, load
+  * reserve memory for QByteArray in ~Shred
+  * QDataStream versioning. Warning: old shreds file are obsolete, delete them
+  * stub text screen, update VirtScreen
+  * screen optimization
+  * lightMap now is 0-initialized
+  * minor fixes
+  * documentation skeleton
+  * tree fix
+  * block deletion fix
+  * player death segfault fix
+  * remove unnecessary checks
+  * add documentation
+  * License
+  * add Shred::Longitude(), Shred::Latitude()
+  * Moved(int) signal and World::ReEnlightenMove(int)
+  * divide active zone to active and loaded, fix regressions
+  * correction of invalid number of loaded and active shreds in options
+  * class Player documentation
+  * link to documentation
+  * doxyden-generated html
+  * move html
+  * get rid of gh-pages
+  * clean master from html
+  * VirtScreen::Move(const int) slot
+  * VirtScreen documentation
+  * documentation fix
+  * active shred number fix
+  * fix for win console
+  * add World::UpdatesEnded() signal and VirtScreen::UpdatesEnd() slot
+  * prepare player actions for upgrade
+  * restore open
+  * start modifying actions
+  * use action and clock block
+  * throw, inventory is now array of QStacks
+  * empty pile dissapearing, various fixes
+  * obtain action
+  * wield action
+  * inscribe action
+  * quick inventory
+  * eat action
+  * eat, inscribe correction
+  * damage action
+  * build action
+  * take off action
+  * normalize unchanged blocks when damaged or inscribed
+  * update stub-screen
+  * screen tweaks
+  * satiation correction
+
+  [ Panzerschrek ]
+  * 3d screen
+  * Revert "3d screen"
+
+  [ mmaulwurff ]
+  * various updates
+  * hand (mini) craft. common craft system
+  * little blocks code cleanup
+  * inventory build fix
+  * inventory print code cleanup
+  * inventories of different size
+  * blocks code cleanup
+  * plate (step)
+  * blocks weight redesign
+  * pushing things to step
+  * different inventory sizes fix
+  * Screen::PrintInv weight fix
+  * inventory interactions redesign
+  * inventory fixes
+  * workbench, full craft
+  * pile behaviour fix
+  * inventory code cleanup
+  * common weapons
+  * ladder
+  * jump into step fix
+  * screen quick inventory in three lines
+  * nonstandard level of transparency
+  * animal regeneration, using clock when pushing it
+  * add door
+  * door fix
+  * make door act as a hatch
+  * test shred with different blocks
+  * fix constans names match
+  * fix eating empty slot crash
+  * fix animals transparent level
+  * respawn
+  * add active and loaded size runtime changing
+  * shreds number change and respawn fixes
+  * prepare screen for 3x3 free zone
+  * 3x3 free moving zone
+  * UP and DOWN direction don\'t turn right and left
+  * add numbers of shreds saving and loading
+  * deferred move and jump
+  * normalize unchanged block after damage
+  * active double unregistration fix
+  * change animal breath ability
+  * breath damage fix
+  * Updated() signal in Active
+  * fix crash when block deletes itself
+  * pyramid shred
+  * update transparency
+  * remove gravity from World::Move, improve gravity in Shred::PhysEvents
+  * less #include's in .h files
+  * shreds load fix
+  * falling hurts
+  * update block when damaged
+  * convenient Shred::SetNewBlock
+  * hazelnut and bush tuning
+  * shred absolute coordinates are signed long now
+  * QSettings instead of manual configs
+  * sunshine update
+  * world load fix
+  * windows compatibility
+  * dirs initial load fix, jumping fix
+  * shiftFocus save and load
+  * new damage target aiming
+  * new target aiming for examine, use and inscribe
+  * new target aiming for build
+  * World::TurnLeft, World::TurnRight and World::Anti are static
+  * disallow building when falling
+  * grass doesn't grow in the dark
+  * deferred build, build below feature
+  * screen action mode save
+  * deferred Player::Damage
+  * wrong initial player direction
+  * deferred throw
+  * deferred actions code prepare
+  * screen shift focus more usable
+  * light test in Player::Examine
+  * fire light and sun light division
+  * sun reenlighten fix
+  * change world size bug fix
+  * jump fix, sunlight optimize
+  * fix active blocks in inentory load, various stuff
+  * screen colors fix
+  * little screen color fix
+  * little jumping and building fix
+  * inventory in inventory save fix
+  * time of day notifications
+  * xy shred save filename format
+  * mountain
+  * stone door is opaque
+  * upper-case constants
+  * creative mode support
+  * fast destruction in creative mode
+  * give command
+  * last command execution
+  * remove old Block::CanBeIn
+  * move command
+  * what command
+  * trailing tab
+  * use SetNewBlock more
+  * little water simplification
+  * all blocks have initial MAX_DURABILITY
+  * simplify active block constructors, BlockManager
+  * CraftManager class, simplify inventory constructor
+  * CraftManager code manipulations
+  * Memory usage by shreds and world tuning.
+  * Active::whereShred initialization fix, World::PutNormal
+  * Shred::fallList
+  * now all new blocks are received through BlockManager
+  * BlockManager little interface change, little tunings
+  * prepare blocks constructor interfaces
+  * finish block constructor interface compatibility
+  * new memory system. not stable
+  * New memory system. Not finished.
+  * forgot two files
+  * divide declaration and definition of Inventory
+  * divide Active declaration and definition
+  * divide Plate declaration and definition
+  * divide Ladder declaration and definition
+  * divide Clock declaration and definition
+  * divide Weapon declaration and definition
+  * divide Pick declaration and definition
+  * divide Animal declaration and definition
+  * divide Dwarf declaration and definition
+  * divide Chest declaration and definition
+  * divide Pile declaration and definition
+  * divide Liquid declaration and definition
+  * divide Grass declaration and definition
+  * divide Rabbit declaration and definition
+  * divide Workbench declaration and definition
+  * divide Door declaration and definition
+  * divide World declaration and definition
+  * divide Shred declaration and definition
+  * divide Screen declaration and definition
+  * divide VirtScreen declaration and definition
+  * memory chunk allocation failed, cleaning up
+  * text messages from block to block, restore clock work
+  * clock now works as alarm and as timer
+  * remove semicolon after Q_OBJECT
+  * add build messages
+  * fix non-DIFFERENT pile substance
+  * catchable blocks fix, code width
+  * heal command
+  * fix clock
+  * creativeMode check for heal command
+  * remove BeforeMove
+  * remove redundant consts in declarations
+  * World:: Move, CanMove and NoCheckMove
+  * CanMove tuning
+  * fix jumping and door
+  * add sunMoonFactor to ReEnilghtenTime
+  * new world file system
+  * put player settings in world settings file
+  * move screen and game options to local freg.ini
+  * redundant declarations
+  * different views of locked/unlocked door
+  * minor improvements
+  * put in order definitions
+  * fall gravity
+  * grass little optimization
+  * idea to Active::ActiveTurn
+  * put in list only needed active blocks
+  * divide actions in frequent and rare
+  * bush registration fix, code enhance
+  * fix active blocks reload when shreds reload
+  * qrand instead of rand
+  * death screen
+  * set code lines width to 79
+  * World::MiniTime()
+  * sandstone
+  * desert
+  * list for all active blocks: optimize
+  * reload shreds active list fix
+  * little World::Visible and World::DirectlyVisible code review
+  * rabbit eating fix
+  * creative mode moving
+  * Player::MoveInsideInventory
+  * creative build
+  * screen tuning for creative mode
+  * World::Directly review
+  * various minor fixes
+  * varioush minor fixes
+  * symmetric light ways
+  * all is visible in creative mode
+  * player receives blocks from creative mode
+  * different normal blocks for 6 (main) directions
+  * wielding things by moving inside
+  * Player::MoveInsideInventory can wield things now
+  * various fixes after coverity check
+  * revise weights
+  * fix screen weigth presentation
+  * screen update
+  * fix damage messages
+  * notify window scrolling
+  * ice and snow
+  * one read of map.txt
+  * screen tweaks
+  * noise landscape generation by Panzerschrek
+  * add Artjom Kunz to README
+  * minor fixes
+  * minor fixes
+
+  [ mmaulwurff ]
+  * map generator (island)
+  * wide rivers
+  * building in water, small fixes
+  * mountain and hill
+  * fix generation constants
+
+  [ mmaulwurff ]
+  * can take everything in hand
+  * move inside inventory fix
+  * flying tree fix, also branches
+  * fix rabbit brains
+  * remove Block::CanBeOut
+  * FLAT_GENERATION constant option
+  * add command line parameters to mapgen
+  * add filename option to mapgen and call it from World::World
+  * small NormalUnderground fix
+  * add splash screen to console game start
+  * map generation fix
+  * put world sizes settings to global and make random spawn place
+  * make Shred::TypeOfShred public temporarily
+  * fix rabbit madness
+  * fix flying tree, minor fixes
+  * update death screen
+  * add screen splash and death without .txt
+  * fix moving while falling
+  * add global player coordinates
+  * Player::Moved signal
+  * flat hills
+  * move fix
+  * make snow of class Active instead of Pile
+  * allow moving more than one block at once between inventories
+  * minor corrections
+  * move UpdatedAll to appropriate place, should fix bug in graphics screen
+  * inherit workbench from chest
+  * clay block - clay brick
+  * player global coordinates fix
+  * center windows in console screen
+  * splash screen tuning
+  * jump to air fix: replaced by move
+  * auto-destroying of grass when there is no soil under grass
+  * proper inventory access rights
+  * multiple drop
+  * fix crush bug when resizing world in creative
+  * ushort Player::SatiationPercent()
+  * minor fixes
+  * special curses window for command input
+  * fix unfalling when jumping over shred border
+  * initialize player direction
+  * QString usage review
+  * manipulate code
+  * curses screen: right window shows ground and sky view
+  * Screen::PrintFile and help.txt
+  * game help, invoked by H key
+  * move down (key End)
+  * jumping before falling fix
+  * mouse events support in curses screen
+  * mouse quick inventory access ranges fix
+  * change active hand ability
+  * add material to inventory slot when building things
+  * new deferred actionst system
+  * turn in creative mode when moving
+  * reorganize eating system
+  * minor code cleanup
+  * right function status
+  * deferred action delete in ~Active
+  * right quick inventory mouse click positioning
+  * constants to uppercase
+  * sun shines neighbour blocks too
+  * code cleanup
+  * add Player::StopUseAll()
+  * curses screen: more convenient focus shift indication
+  * fix damage in creative mode
+  * get rid of excess functions in World
+  * code chore
+  * code chore
+  * Code cleanup
+  * code cleanup, remove excess bounds check
+  * add text signal processing to Inventory
+  * revise return type of World::CanMove and World::GetAll
+  * minor changes, also prepare for travelling in creative mode
+  * far travelling in creative mode
+  * code revise
+  * fix opened dissapearing pile, wrong throw behaviour
+  * restore screen pdcurses compatibility
+  * fix using clock in inventory
+  * replace bad code for QString::arg usage
+  * replace ugly QString::number with QString::arg
+  * remove excess QString constructors
+  * fix duplicating deferred actions
+  * revise CraftManager code
+  * revise Shred.cpp
+  * various lighting fixes
+  * change light radius of dwarf when holding things
+  * minor code revise
+  * revise screen.cpp code
+  * optimize rabbit behaviour
+  * revise Inventory
+  * add separate PrintHUD to curses screen
+  * revise screen code
+  * initiate flat mountain, code revise
+  * turn damaged rock to stone ladder
+  * add water pool to flat mountain
+  * fix crush when deferred action destroys block
+  * minor code revise
+  * fix update lag in curses screen
+  * flat mountain cavern
+  * fix no-falling in when world is being shifted
+  * fix regressions
+  * fix inscribing liquid and air
+  * remove excess QString
+  * speed up block save and load
+  * optimize sunlight
+  * code chore
+  * fix possible bug with glass inventory
+  * add throw and obtain in creative mode
+  * little InBounds optimization
+  * remove normal blocks with no-up direction
+  * prevent from setting direction of symmetric blocks
+  * add version to .pro file
+  * add current version information in screen
+  * add fallback VER to header.h
+  * remove fallback VER
+  * more optimizations
+  * remove excess lightmap sets in LoadShred
+  * remove Active::InBounds
+  * fix non-flat shred generation
+  * fix unfalling bug
+  * fix lighting bug
+  * move TypeOfShred to World. Interfaces are not changed
+  * replace QList with QLinkedList in class Shred
+  * add optimization options to .pro file
+  * return QList to Shred
+  * fix Shred::TypeOfShred
+  * add interface for other lighting models
+  * remove unused methods in Shred
+  * remove runtime world sizes changing
+  * code chore
+  * remove automatic turn from Player::Move.
+  * allow player to move to direction it has.
+  * update help
+  * divide different generations to different files
+  * add Player::SetUsingTypeNo()
+  * docs update
+  * remove docs from master
+  * docs update
+  * remove docs from master
+  * text and paper, code chore
+  * add bounds check to player 'what' command
+  * header chore
+  * map
+  * screen code chore
+  * map auto update
+  * show yourself on map
+  * code chore
+  * add hidden texts, Block::Inscribe from void to bool
+  * kind/sub to string and vice versa converting
+  * add bell block
+  * add beep on/off option in config
+  * add SOUND_STRINGS[]
+  * small optimization of world coordinations computing
+  * divide World and WorldMap
+  * fix compatibility issues
+  * add Player::BreathPercent()
+  * fix map file shift in windows attempt
+  * fix mapgen compatibility issues
+  * add .pro
+  * add World::ReEnlightenBlockAdd and ReEnlightenBlockRemove
+  * add constant minimum light radius to Dwarf
+  * add Add... and RemoveFireLight to World::Build and DestroyAndReplace
+  * time command
+  * replace mod (%) with bit and (&)
+  * update version
+  * make World::SunShineHorizontal public
+  * make Shred::shiningList a linked list
+  * add "Ouch!" notification and flash in curses screen
+  * add beepOn check for flash
+  * code chore
+  * fix dwarf weight
+  * fix Dwarf::MoveInside
+  * prepare: divide BlockManager::BlockFromFile
+  * new shred file format
+  * style
+  * code style
+  * code chore
+  * code chore
+  * allow dropping things in water
+  * fix swimming and falling into water
+  * code chore
+  * remove obsolete files
+  * update license
+  * add email
+  * add copyright and warranty
+  * add template and warranty texts
+  * move all texts to texts/
+  * style
+  * initiate shred preload
+  * remove mouse support from curses screen
+  * shred preload system
+  * move compression to ShredStorage
+  * code chore
+  * put moc*, *.o to folders, add version to binary
+  * code chore
+  * code chore, add mutex to screen
+  * add shred memory pool
+  * add fast Block::Id(). id is ((kind) << 8 | sub)
+  * rename Block::Id() to GetId(), make BlockManager::MakeId public
+  * update lighting interface
+  * remove obsolete stub screen, new is in stub_screen branch
+  * make keys also commands
+  * fix constant name
+  * simplify mutex locks in Player
+  * fix moving crash
+  * add chaos shred. not stable
+  * redesign shred lists, not stable
+  * code revise, not stable
+  * fix moving across shreds, not tested
+  * minor shred lists work fixes, not stable
+  * make world shift deferred
+  * fix active destroying signal sending
+  * fix commands order
+  * fix ladder bug
+  * code chore, min world size is 7 now
+  * code chore
+  * code chore, texts and maps are now searched in *.txt format
+  * code chore, bug in Player::ProcessCommand
+  * code chore
+  * add world directions to screen arrows
+  * code chore, only allow moving lighter objects
+  * minor changes
+  * quick fix to moving across shreds fall
+  * split blocks.h
+  * add forgotten headers
+  * hightlight player position with blinking '_'
+  * enhance blinking '_' highlighting
+  * shred list work redesign, slow, not tested
+  * code chore, not stable
+  * redesign deferred actions
+  * fix jumping
+  * fix stone to ladder bug
+  * code chore
+  * code chore
+  * move Dwarf:: to Dwarf.cpp
+  * code chore
+  * code chore
+  * add control-c and control-d handling to curses screen
+  * style
+  * code chore, style
+  * code chore
+  * crush bug fix, not last, yet not stable
+  * fix crush bugs
+  * fix memory leak in shreds
+  * code chore, back to unstable
+  * code chore
+  * code chore
+  * push spawning player to surface
+  * add compile option to enable commands always
+  * fix player spawning bug
+  * fix unfalling when changing shred
+  * fix falling
+  * code chore, test shred fix, microoptimization
+  * code chore
+  * make rabbit code more common
+  * change log format
+  * load microoptimization
+  * microoptimization
+  * code chore
+  * code chore, remove World::Sub(x, y, z)
+  * player can eat using block in inventory
+  * connect VirtScreen::DeathScreen in constructor
+  * fix gold
+  * predator
+  * initiate predator
+  * code chore, fix memory bug in creative mode
+  * predator bites
+  * add spaces for colour to fill
+  * code chore
+  * add named constants for sound strings
+  * console screen small death fix
+  * fix critical bug with block damaging
+  * fix possible crushes
+  * make better pile behaviour
+  * make call of mapgen in Qt-way
+  * code chore
+  * add signal Player::Updated emitting in block using
+  * add empty command: do nothing
+  * if hungry, predator can eat grass
+  * fix block removing bug, code chore
+  * divide Block::BeforePush to PushResult and Push
+  * combine Block::Movable and PushResult
+  * code chore
+  * initiate layers, not stable
+  * add simple order to activeListFrequent: intelligent first
+  * fix water moving
+  * code chore
+  * code chore
+  * commands code chore
+  * code chore
+  * code cleanup
+  * code chore
+  * fix bugs with pile
+  * code chore
+  * code chore
+  * code chore
+  * fix crash when falling in new shred, code chore
+  * code chore
+  * code chore
+  * add install path to .pro
+  * add narrow terminals support
+  * add pedantic option to make
+  * convert tabs to spaces.
+  * add -Werror and fix binary file name
+  * initiate unicode support
+  * enable unicode file output
+  * code chore
+  * add copy constructors to Block and Inventory
+  * add shred format check
+  * move notification and command areas to center
+  * utf input
+  * add notification lines stacking, remove tabs from screen.h
+  * more quit keys
+  * add translations
+  * add initial translations
+  * add partial russian translation
+  * curses interface translations
+  * minor russian translation fixes
+  * translation fixes
+  * code chore
+  * new help system, code chore
+  * update translations
+  * modify help files
+  * redesign hitpoints and breath bars
+  * add unicode arrows
+  * change player arrows
+  * code chore
+  * remove tabs, code chore
+  * code chore
+  * fix door bug
+  * code chore
+  * split line in inventory
+  * initiate new craft system
+  * new CraftManager, not tested
+  * finish craft system, not used, not tested
+  * restore minicraft
+  * fix recipe lists check
+  * return big craft (workbench)
+  * add 'G' key to 'Obtain' action
+  * bug fixes
+  * code chore
+  * add initial code for bucket support
+  * improve bucket
+  * add liquid explosion when vessel is destroyed
+  * fix down view
+  * code chore
+  * add pouring liquids from bucket
+  * remove passing QString by reference: not needed
+  * various bucket fixes
+  * move blocks code to blocks directory
+  * code chore
+  * update translations
+  * code chore
+  * add bone, steel and adamantine
+  * move weapons to special files
+  * add hammer, axe, shovel
+  * make animals drop bones
+  * various craft related fixes
+  * masonry
+  * minor fixes and code chore
+  * rename wooden hammer to club
+  * initiate fire
+  * finish fire
+  * code chore
+  * fix screen lag
+  * glass text: screen
+  * initiate illuminators, prepare interfaces
+  * new player actions interface
+  * make new deferred action
+  * some illuminators can set fire
+  * code chore
+  * fix lighting
+  * update translations
+  * code chore, shake inventory
+  * code chore, style
+  * change get/give command interface, protect BlockManager strings number
+
+  [ Alexander Kromm ]
+  * add gitignore
+  * add windows support
+  * windows fixes
+  * add --ascii option
+  * add Qt commandline parser
+  * code chore
+  * minor water shred optimization
+  * destroy code review
+  * make inner actions
+  * fix inventory bug
+  * add final to classes
+  * update README
+  * add map generation into game
+  * make vim highlight file instead of printmap
+  * forgot file
+  * add .vim note to README
+  * add diagonal walking emulation
+  * save shreds outside of map too
+  * add choose world option
+  * add generation options
+  * remove mapgen
+  * update
+  * fix performance bug and increase performance
+  * minor optimization
+  * tune HUD colors
+  * code chore
+  * optimize Gravitate
+  * fix normal block destroy bug
+  * code chore, merge Xyz into Active
+  * code chore
+  * revise files order
+  * add recipes to code
+  * pro file chore
+  * evernight option
+  * move CraftManager into world
+  * fix sun crash with evernight
+  * remove dead code
+  * move VirtScreen and put IThread to its own files
+  * initialize lightMap with memset
+  * add focused block durability bar
+  * code chore
+  * code chore
+  * add TextScreen
+  * check by MSVC
+  * add fuel to illuminators
+  * add clock option to show real time
+  * allow block to drop itself
+  * code chore
+  * code chore, merge Chest and Pile into Container
+  * code chore, minor fix
+  * code chore
+  * null mountain, code chore
+  * add bomb
+  * use NormalCube more
+  * move SetXyz to Xyz
+  * code chore, possible air drop bug fix
+  * code chore
+  * fix throwing into fridge bug
+  * make stone and moss stone nearly equal
+  * fix lighting, start castle
+  * build castle
+  * rewrite castle
+  * add google+ to readme
+  * pull block code to Block.cpp
+  * forgot files
+  * add abyss block
+  * code chore
+  * microoptimization!
+  * more code chore
+  * more microoptimization!
+  * code chore
+  * micro optimizations
+  * optimize SunShiveVertical, code chore
+  * code chore
+  * remove CursedScreen own timer, connect to world
+  * get rid of NULL
+  * code chore, minor optimizations
+  * minor code chore
+  * code chore
+  * code chore
+  * optimize block save and load
+  * code chore
+  * code chore
+  * optimize initial lighting
+  * minor optimizations
+  * code chore
+  * add minimap
+  * colorize minimap, code chore
+  * code chore
+  * acid
+  * code chore
+  * new drop system
+  * code chore
+  * code chore
+  * chore fix
+  * acid tuning
+  * prepare weather
+  * replace activeListRare with activeListAll, they were nearly the same size
+  * add compile option RAIN_IS_DEW
+  * code chore
+  * fix clang compatibility issue
+  * lighting optimization
+  * code chore
+  * optimizations
+  * code chore
+  * symmetric light
+  * more inline
+  * divide active and falling as not all actives should fall
+  * fix animal falling
+  * code chore, inherit constructors
+  * new active block managing system, rain
+  * more colours!
+  * code chore
+  * code chore
+  * code chore, minor fixes
+  * more chore
+  * code chore, fix memory leaks
+  * new rain shred interface
+  * more restrictions, style
+  * do not use rtti
+  * RainMachine!
+  * code chore, fixes
+  * small fixes
+  * merge Player::Use and Eat, Wield and TakeOff, code cleanup
+  * new action show system, minor fixes
+  * fix bucket
+  * world lock file
+  * code chore
+  * code chore
+  * reduce cyclomatic complexity
+  * code chore
+  * update russian translation
+  * code chore
+  * RainMachine cloud generation
+  * merge Wield/Take off action to Use
+  * inventory tuning up, screen tuning up
+  * save player using status
+  * fix moving inside dwarf inventory
+  * bottle, cadaver, various fixes
+  * lakes: water, lava and acid
+  * fix Terrible bug in sun shining
+  * fix notification bug
+  * fix inventory save
+  * add vk community to readme
+  * dust
+  * waste shred, falling bug fixes
+  * piece of eden, move spawn coordinates to map
+  * crater
+  * add dead forest and hill
+  * make CraftManager global
+  * fix bugs
+  * add moreshred colors, move damage types to Block.h
+  * merge Push and Damage
+  * fix shred colors
+  * fix bugs
+  * fix swimming bug
+  * adamantine dwarf
+  * fix load falling bug
+  * minor fixes, update help files
+  * minor fixes
+  * add converter, minor fixes
+  * furnace turning off, code chore
+  * fix inventory bugs
+  * clean up world, remove sun
+  * fix death bug
+  * initiate armour
+  * add converter fuel use
+  * code chore
+  * more code chore
+  * -Weffc++
+  * code chore
+  * more code chore
+  * turn recipes to json, code chore
+  * code chore
+  * revise CraftManager
+  * make Kind() not virtual
+  * minor optimizations
+  * find optimal compression level
+  * update text screen, move settings to VirtScreen
+  * fix map generation
+  * reduce memory usage by moving notes from blocks to world
+  * add armour
+  * remove ::Kind() and ::Sub() from Inventory
+  * update translations
+  * delete obsoleted recipes
+  * readme correction
+  * use Markdown for help files instead of simple text
+  * convert README and COPYING into Markdown
+  * warranty show fix
+  * forgot mds
+  * try to include lists in documentation
+  * second attempt, try to include lists in documentation
+  * add lists of kinds and subs to docs
+  * remove NOWHERE direction
+  * merge new minimal world size to master
+  * code chor
+  * fix todos
+  * move deferred action to animal
+  * fix screen
+  * minor memory usage fix
+  * code cleanup
+  * code chore
+  * add -empty- lines to inventory, bug fix
+  * add telegraph
+  * add focused block name to screen
+  * change telegraph name
+  * code chore
+
+ -- Alexander Kromm <mmaulwurff@gmail.com>  Wed, 13 Aug 2014 18:22:43 +0700
+
+freg (0.3-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Alexander Kromm <mmaulwurff@gmail.com>  Wed, 13 Aug 2014 18:18:01 +0700

@@ -1,0 +1,33 @@
+[
+    {
+        "materials" : [
+            {
+                "number" : 9,
+                "kind" : "weapon",
+                "sub" : "stone"
+            }
+        ],
+        "products" : [
+            {
+                "number" : 1,
+                "kind" : "illuminator",
+                "sub" : "stone"
+            }
+        ]
+    }, {
+        "materials" : [
+            {
+                "number" : 8,
+                "kind" : "block",
+                "sub" : "stone"
+            }
+        ],
+        "products" : [
+            {
+                "number" : 1,
+                "kind" : "converter",
+                "sub" : "stone"
+            }
+        ]
+    }
+]
