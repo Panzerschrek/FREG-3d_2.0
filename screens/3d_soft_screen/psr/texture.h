@@ -31,7 +31,6 @@ public:
 	const unsigned char* GetPalette() const;
 	bool IsPlaettized()const;
 
-	int Load( const char* file_name );
 	void Convert2GRBS();
 	void Convert2RGBAFromPlaettized();
 	void SetColorKeyToAlpha( const unsigned char* color_key, unsigned char alpha );//work only for RGBA textures
@@ -43,9 +42,6 @@ private:
 	static void GenLod( int sx, int sy, const unsigned char* in_data, unsigned char* out_data );
 	static void RGB2RGBS( int sx, int sy, unsigned char* in_out_data );
 	
-	int LoadTextureTGA( const char* filename );
-	int LoadTexturePCX( const char* filename );
-	int LoadTextureWAL( const char* filename );
 
 	unsigned char FindNearestColorInPalette( unsigned char* color );
 

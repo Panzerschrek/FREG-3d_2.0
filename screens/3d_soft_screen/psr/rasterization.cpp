@@ -1043,14 +1043,57 @@ static fixed16_t triangle_in_lightmap_tex_coord[ 2 * 3 +2 ];
 //static fixed16_t scanline_z[ 1 + PSR_MAX_SCREEN_WIDTH / PSR_LINE_SEGMENT_SIZE ];
 static fixed16_t scanline_z[ 2 + PSR_MAX_SCREEN_WIDTH ];
 
+#ifdef PSR_SSE_Z_CALCULATION
+
 //vector for division for fast z calculation
 #define SSE_DIV_VAL (float(PSR_INV_DEPTH_DELTA_MULTIPLER)*4294967296.0f)
-static PSR_ALIGN_16 float inv_delta_multipler_vec[8]= {
+PSR_ALIGN_16 static const float inv_delta_multipler_vec[8]= {
 	SSE_DIV_VAL, SSE_DIV_VAL, SSE_DIV_VAL, SSE_DIV_VAL,
 	SSE_DIV_VAL, SSE_DIV_VAL, SSE_DIV_VAL, SSE_DIV_VAL };
 #undef SSE_DIV_VAL
 
 unsigned char tetrapixel_z_calculated[1+PSR_MAX_SCREEN_WIDTH/4];
+PSR_ALIGN_16 fixed16_t tetrapixel_z[4];//final z of 4 pixels
+PSR_ALIGN_16 fixed16_t inv_z_v_int[4];//vector of 4 inv_z of 4 pixels
+
+inline void CalculateTetrapixelZ()
+{
+    #ifdef PSR_MASM32
+    __asm
+    {
+        cvtpi2ps xmm2, qword ptr[ inv_z_v_int ]//covnert 2 ints to floats
+        cvtpi2ps xmm3, qword ptr[ inv_z_v_int+8 ]//covnert second 2 ints to floats
+        movlhps xmm2, xmm3
+        movaps xmm1, qword ptr[inv_delta_multipler_vec]
+        divps xmm1, xmm2//make division! 4 per command !
+
+        cvttps2pi mm6, xmm1//convert 2 lower floats to ints
+        movhlps  xmm1, xmm1//write upper 2 floats to lower
+        cvttps2pi mm7, xmm1//convert too
+
+        movq qword ptr[ tetrapixel_z ], mm6
+        movq qword ptr[ tetrapixel_z + 8 ], mm7
+    }
+    #endif
+    #ifdef PSR_GCC_ASM32
+    asm(
+    "cvtpi2ps (%1), %%xmm2\n\t"
+    "cvtpi2ps (%1+8), %%xmm3\n\t"
+    "movlhps %%xmm3, %%xmm2\n\t"
+    "movaps %2, %%xmm1\n\t"
+    "divps %%xmm2, %%xmm1\n\t"// xmm1/xmm2
+    "cvttps2pi %%xmm1, %%mm6\n\t"
+    "movhlps %%xmm1, %%xmm1\n\t"
+    "cvttps2pi %%xmm1, %%mm7\n\t"
+    "movq %%mm6, (%0)\n\t"
+    "movq %%mm7, (%0+8)\n\t"
+    ://input - nothing
+    :"m"(tetrapixel_z), "m"(inv_z_v_int), "x"(*((__m128i*)inv_delta_multipler_vec))
+        :"%xmm1", "%xmm2", "%xmm3", "%mm6", "%mm7"
+          );
+    #endif
+}
+#endif
 
 
 //variables for ScanLines function
@@ -1178,8 +1221,6 @@ void ScanLines()
 		//set z calculating flags to false
 		for( int tx= x_begin>>4, tx_end= (x_end>>4)+1; tx<= tx_end; tx++ )
 			((int*)tetrapixel_z_calculated)[tx]= 0;
-		PSR_ALIGN_16 fixed16_t tetrapixel_z[4];
-		__asm movups xmm0, xmmword ptr[ inv_delta_multipler_vec ]
 #endif
         int s;
         unsigned char* pixels;
@@ -1233,32 +1274,18 @@ void ScanLines()
 #endif
 
 #ifdef PSR_SSE_Z_CALCULATION
-			int tetrapix_num= x&3;
-			if( tetrapixel_z_calculated[x>>2] == 0 )
-			{
-				PSR_ALIGN_16 fixed16_t inv_z_v_int[4];
-				int inv_z= line_inv_z - d_line_inv_z*tetrapix_num;
-				for( int i= 0; i< 4; i++, inv_z+= d_line_inv_z )
-					inv_z_v_int[i]= inv_z;
-				__asm
-				{
-					cvtpi2ps xmm2, qword ptr[ inv_z_v_int ]//covnert 2 ints to floats
-					cvtpi2ps xmm3, qword ptr[ inv_z_v_int+8 ]//covnert second 2 ints to floats
-					movlhps xmm2, xmm3
-
-					movaps  xmm1, xmm0//mov inv_delta_multipler_vec
-					divps xmm1, xmm2//make division! 4 per command !
-
-					cvttps2pi mm6, xmm1//convert 2 lower floats to ints
-					movhlps  xmm1, xmm1//write upper 2 floats to lower
-					cvttps2pi mm7, xmm1//convert too
-
-					movq qword ptr[ tetrapixel_z ], mm6
-					movq qword ptr[ tetrapixel_z + 8 ], mm7
-				}
-				tetrapixel_z_calculated[x>>2]= 1;
-			}
-			final_z= tetrapixel_z[tetrapix_num];
+            {
+                int tetrapix_num= x&3;
+                if( tetrapixel_z_calculated[x>>2] == 0 )
+                {
+                    int inv_z= line_inv_z - d_line_inv_z*tetrapix_num;
+                    for( int i= 0; i< 4; i++, inv_z+= d_line_inv_z )
+                        inv_z_v_int[i]= inv_z;
+                    CalculateTetrapixelZ();
+                    tetrapixel_z_calculated[x>>2]= 1;
+                }
+                final_z= tetrapixel_z[tetrapix_num];
+            }
 #else
 			final_z= Fixed16DepthInvert( line_inv_z );
 #endif//PSR_SSE_Z_CALCULATION
@@ -1616,16 +1643,17 @@ next_line:
 	{
 		__asm emms
 	}
-	const bool emms_cleared= true;
-#else
-	const bool emms_cleared= false;
 #endif
 
 #ifdef PSR_SSE_Z_CALCULATION
-	if( !emms_cleared )
-	{
-		__asm emms
-	}
+
+    #ifdef PSR_MASM32
+    __asm emms
+    #endif
+    #ifdef PSR_GCC_ASM32
+    asm( "emms\n\t" : : : );
+    #endif
+
 #endif
 
 }//ScanLines
@@ -2505,7 +2533,7 @@ void DrawLineFromBuffer( char* buff )
 extern "C"
 {
 
-#define CURRENT_DEPTH_TEST_TYPE DEPTH_TEST_NONE//DEPTH_TEST_GREATER
+#define CURRENT_DEPTH_TEST_TYPE DEPTH_TEST_GREATER
 
 
 //world rendering functions
@@ -2513,7 +2541,7 @@ void (*DrawWorldTriangle)(char*buff)= Draw::DrawTriangleFromBuffer
 < COLOR_FROM_TEXTURE, TEXTURE_NEAREST, BLENDING_NONE, ALPHA_TEST_NONE, LIGHTING_CONSTANT, LIGHTMAP_LINEAR, ADDITIONAL_EFFECT_NONE, CURRENT_DEPTH_TEST_TYPE, true >;
 
 void (*DrawWorldTriangleSimple)(char*buff)= Draw::DrawTriangleFromBuffer
-< COLOR_CONSTANT, TEXTURE_NONE, BLENDING_NONE, ALPHA_TEST_NONE, LIGHTING_NONE, LIGHTMAP_LINEAR, ADDITIONAL_EFFECT_NONE, CURRENT_DEPTH_TEST_TYPE, true >;
+< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, BLENDING_NONE, ALPHA_TEST_NONE, LIGHTING_CONSTANT, LIGHTMAP_LINEAR, ADDITIONAL_EFFECT_NONE, CURRENT_DEPTH_TEST_TYPE, true >;
 
 
 }//extern "C"

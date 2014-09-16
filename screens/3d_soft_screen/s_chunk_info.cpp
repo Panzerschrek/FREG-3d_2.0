@@ -121,22 +121,23 @@ void s_ChunkInfo::GenChunk()
     //something unfinished:
     //TODO: set up textures, generate chunk borders
 
-    const fixed16_t tex_size= 65536;
+    const fixed16_t tex_size= 65536 * 16;
 
     int x, y, z;
     s_WorldQuad* quad= quad_buffer[1].quads;
 
-    int X= 0, Y= 0;
+    int X= shred->Longitude() * SHRED_WIDTH, Y= shred->Latitude()  * SHRED_WIDTH;
+    //int X= 0, Y= 0;
 
     for( x= 0; x< SHRED_WIDTH  - 1 ; x++ )
     {
         for( y= 0; y< SHRED_WIDTH  - 1; y++ )
         {
             unsigned char* t_up= transparency + BLOCK_LINEAR_ADDR(x,y,min_geometry_height+1);
-            unsigned char* t_x=  transparency + BLOCK_LINEAR_ADDR(x+1,y,0);
-            unsigned char* t_y=  transparency + BLOCK_LINEAR_ADDR(x,y+1,0);
+            unsigned char* t_x=  transparency + BLOCK_LINEAR_ADDR(x+1,y,min_geometry_height);
+            unsigned char* t_y=  transparency + BLOCK_LINEAR_ADDR(x,y+1,min_geometry_height);
 
-            unsigned char block_t= *(transparency + BLOCK_LINEAR_ADDR(x,y,0) );
+            unsigned char block_t= *(transparency + BLOCK_LINEAR_ADDR(x,y,min_geometry_height) );
             for( z= min_geometry_height; z<= max_geometry_height; z++ )
             {
                 if( block_t != *t_up )
@@ -179,10 +180,10 @@ void s_ChunkInfo::GenChunk()
                 if( block_t != *t_y )
                 {
                     quad->coord[1]= quad->coord[4]= quad->coord[7]= quad->coord[10]= float(Y+y+1);
-                    quad->coord[5]= quad->coord[2]= float(z);
-                    quad->coord[11]= quad->coord[8]= float(z+1);
-                    quad->coord[9]= quad->coord[0]= float(X+x);
-                    quad->coord[6]= quad->coord[3]= float(X+x+1);
+                    quad->coord[11]= quad->coord[2]= float(z);
+                    quad->coord[5]= quad->coord[8]= float(z+1);
+                    quad->coord[3]= quad->coord[0]= float(X+x);
+                    quad->coord[9]= quad->coord[6]= float(X+x+1);
                     quad->normal= (block_t > *t_y) ? NORMAL_Y_POS : NORMAL_Y_NEG;
 
                     quad->tc[0]= quad->tc[2]= 0;

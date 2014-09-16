@@ -85,13 +85,12 @@ inline fixed16_t Fixed16Div( fixed16_t a, fixed16_t b )
     #ifdef PSR_GCC_ASM32
     int result;
     asm(
-    "movl %1, %%edx\n\t"
     "cdq\n\t"
     "shldl $16, %%eax,%%edx\n\t"
     "shll $16, %%eax\n\t"
     "idivl %2\n\t"
     :"=a"(result)
-            :"rm"(a), "rm"(b)
+            :"a"(a)/*move me 'a', into eax, please*/, "bcSDm"(b)
             :"%edx");
     return result;
     #else
@@ -122,7 +121,7 @@ inline fixed16_t Fixed16Invert( fixed16_t b )
     "xorl %%eax, %%eax\n\t"
     "idivl %1\n\t"
     :"=a"(result)
-            :"rm"(b)
+            :"bcSDm"(b)
             :"%edx");
     return result;
     #else
@@ -148,11 +147,10 @@ inline fixed16_t Fixed16DepthInvert( fixed16_t b )
     #ifdef PSR_GCC_ASM32
     unsigned int result;
     asm(
-    "movl %1, %%edx\n\t"
     "xorl %%eax, %%eax\n\t"
     "divl %2\n\t"
     :"=a"(result)
-            :"i"(PSR_INV_DEPTH_DELTA_MULTIPLER), "rm"(b)
+            :"d"(PSR_INV_DEPTH_DELTA_MULTIPLER)/*move me PSR_INV_DEPTH_DELTA_MULTIPLER into edx, please*/, "bcSDm"(b)
             :"%edx");
     return result;
     #else
@@ -369,17 +367,5 @@ inline fixed16_t Fixed16Vec3DivSqr( fixed16_t x, fixed16_t* v )
 }
 
 
-inline int Log2Ceil( int x )
-{
-	int i= 0;
-	if( x == 0 )
-		return 0;
-	x--;
-	while( x>0 )
-	{
-		x>>=1;i++;
-	}
-	return i;
-}
 
 #endif//FIXED_H

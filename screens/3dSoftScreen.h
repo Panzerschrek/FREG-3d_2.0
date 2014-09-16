@@ -29,8 +29,10 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QTime>
 
 #include "VirtScreen.h"
+#include "math_lib/vec.h"
 
 enum screen_errors {
     SCREEN_NO_ERROR = 0,
@@ -48,6 +50,24 @@ enum actions {
     ACTION_BUILD,
     ACTION_CRAFT,
     ACTION_TAKEOFF
+};
+
+
+enum MoveKeys
+{
+    KEY_MOVE_FORWARD=0,
+    KEY_MOVE_BACK,
+    KEY_MOVE_LEFT,
+    KEY_MOVE_RIGHT,
+    KEY_MOVE_UP,
+    KEY_MOVE_DOWN,
+
+    KEY_TURN_LEFT,
+    KEY_TURN_RIGHT,
+    KEY_TURN_UP,
+    KEY_TURN_DOWN,
+
+    MAX_MOVE_KEYS
 };
 
 class IThread;
@@ -120,6 +140,9 @@ private:
     void MovePlayer(int dir) const;
     void MovePlayerDiag(int dir1, int dir2) const;
 
+    void CamMove();
+    void CalculateFPS();
+
     IThread * const input;
     volatile bool updated;
     QTimer * const timer;
@@ -138,6 +161,13 @@ private:
     FregMainWindow* window;
     QImage* image;//image, used as back framebuffer
     int screen_size_x, screen_size_y;
+
+    bool move_keys_pressed[ MAX_MOVE_KEYS ];
+    m_Vec3 cam_pos, cam_ang;
+
+    QTime prev_frame_time, this_frame_time, prev_fps_time;
+    int current_fps, frame_count_in_last_second;
+    float frame_time_delta;
 };
 
 #endif // TEXTSCREEN_H

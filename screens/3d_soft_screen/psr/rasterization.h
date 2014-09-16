@@ -25,7 +25,9 @@ void PRast_ClearColorBuffer( const unsigned char* color );
 void PRast_ClearDepthBuffer( depth_buffer_t value );
 
 
+extern int (*DrawWorldTriangleSimpleToBuffer)(char* buff);
 extern void (*DrawWorldTriangleSimple)(char*);
+extern int (*DrawWorldTriangleToBuffer)(char* buff);
 extern void (*DrawWorldTriangle)(char*);
 
 /*hack, for generation 1 mov instruction instead 3(4):

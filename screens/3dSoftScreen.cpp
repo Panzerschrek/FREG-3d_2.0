@@ -20,6 +20,7 @@
 /**\file TextScreen.cpp
  * \brief This file is related to text screen for freg. */
 
+#include <QTime>
 #include <QTimer>
 #include <QSettings>
 #include <QDir>
@@ -103,22 +104,152 @@ void Screen::DeathScreen() {
 
 void Screen::OnKeyEvent( QKeyEvent* e, bool is_pressed)
 {
-    if( e->key() == Qt::Key_Escape )
+    switch( e->key() )
+    {
+    case Qt::Key_Escape:
         emit ExitReceived();
+        break;
+
+    case Qt::Key_W:
+        move_keys_pressed[ KEY_MOVE_FORWARD ]= is_pressed;
+        break;
+    case Qt::Key_S:
+        move_keys_pressed[ KEY_MOVE_BACK ]= is_pressed;
+        break;
+    case Qt::Key_A:
+        move_keys_pressed[ KEY_MOVE_LEFT ]= is_pressed;
+        break;
+    case Qt::Key_D:
+        move_keys_pressed[ KEY_MOVE_RIGHT ]= is_pressed;
+        break;
+    case Qt::Key_Space:
+        move_keys_pressed[ KEY_MOVE_UP ]= is_pressed;
+        break;
+    case Qt::Key_C:
+        move_keys_pressed[ KEY_MOVE_DOWN ]= is_pressed;
+        break;
+
+    case Qt::Key_Left:
+        move_keys_pressed[ KEY_TURN_LEFT ]= is_pressed;
+        break;
+    case Qt::Key_Right:
+       move_keys_pressed[ KEY_TURN_RIGHT ]= is_pressed;
+       break;
+    case Qt::Key_Up:
+        move_keys_pressed[ KEY_TURN_UP ]= is_pressed;
+        break;
+    case Qt::Key_Down:
+       move_keys_pressed[ KEY_TURN_DOWN ]= is_pressed;
+       break;
+
+
+    default:
+        break;
+    };
 }
 
+void Screen::CalculateFPS()
+{
+    this_frame_time= QTime::currentTime();
+    frame_time_delta= float( prev_frame_time.msecsTo( this_frame_time ) ) * 0.001f;
+    prev_frame_time= this_frame_time;
 
+    int fps_calc_freq= 2;
+
+    if( prev_fps_time.msecsTo( this_frame_time ) > fps_calc_freq * 1000 )
+    {
+        current_fps= frame_count_in_last_second / fps_calc_freq;
+        frame_count_in_last_second= 0;
+
+        prev_fps_time= this_frame_time;
+    }
+
+    frame_count_in_last_second++;
+}
+void Screen::CamMove()
+{
+    float move_speed= 10.0f;
+    float turn_speed= 0.5f;
+
+    float dt= frame_time_delta;
+
+    if( move_keys_pressed[ KEY_TURN_LEFT ] )
+    {
+        cam_ang.z-= dt * turn_speed;
+    }
+    if( move_keys_pressed[ KEY_TURN_RIGHT ] )
+    {
+        cam_ang.z+= dt * turn_speed;
+    }
+    if( cam_ang.z > m_Math::FM_2PI ) cam_ang.z-= m_Math::FM_2PI;
+    else if( cam_ang.z < 0.0f ) cam_ang.z+= m_Math::FM_2PI;
+
+    if( move_keys_pressed[ KEY_TURN_UP ] )
+    {
+        cam_ang.x-= dt * turn_speed;
+    }
+    if( move_keys_pressed[ KEY_TURN_DOWN ] )
+    {
+        cam_ang.x+= dt * turn_speed;
+    }
+    if( cam_ang.x > m_Math::FM_PI )
+        cam_ang.x= m_Math::FM_PI;
+    else if( cam_ang.x < 0.0f)
+        cam_ang.x= 0.0f;
+
+    if( move_keys_pressed[ KEY_MOVE_FORWARD ] )
+    {
+        cam_pos.y+= dt*move_speed * m_Math::Cos( cam_ang.z );
+        cam_pos.x+= dt*move_speed * m_Math::Sin( cam_ang.z );
+    }
+    if( move_keys_pressed[ KEY_MOVE_BACK ] )
+    {
+        cam_pos.y-= dt*move_speed * m_Math::Cos( cam_ang.z );
+        cam_pos.x-= dt*move_speed * m_Math::Sin( cam_ang.z );
+    }
+
+    if( move_keys_pressed[ KEY_MOVE_LEFT ] )
+    {
+        cam_pos.y-= dt*move_speed * m_Math::Cos( cam_ang.z + m_Math::FM_PI2 );
+        cam_pos.x-= dt*move_speed * m_Math::Sin( cam_ang.z + m_Math::FM_PI2 );
+    }
+    if( move_keys_pressed[ KEY_MOVE_RIGHT ] )
+    {
+        cam_pos.y-= dt*move_speed * m_Math::Cos( cam_ang.z - m_Math::FM_PI2 );
+        cam_pos.x-= dt*move_speed * m_Math::Sin( cam_ang.z - m_Math::FM_PI2 );
+    }
+
+    if( move_keys_pressed[ KEY_MOVE_UP ] )
+    {
+        cam_pos.z+= dt*move_speed;
+    }
+    if( move_keys_pressed[ KEY_MOVE_DOWN ] )
+    {
+        cam_pos.z-= dt*move_speed;
+    }
+}
 void Screen::Repaint()
 {
-    renderer->Draw();
+    CalculateFPS();
 
+    CamMove();
+    renderer->SetViewportSize( screen_size_x, screen_size_y );
+    renderer->SetCamPos( cam_pos );
+    renderer->SetCamAng( cam_ang );
+    renderer->Draw();
 
     QPainter p( window );
     p.drawImage( QPoint(0,0), *image );
+
+
+    QString txt( "fps: " );
+    txt+= QVariant( current_fps ).toString();
+    p.setFont( QFont( "courier new", 12 ) );
+    p.setPen( QColor( Qt::white ) );
+    p.drawText( 10, 30, txt );
 }
 void Screen::OnMouseEvent( QMouseEvent* e, bool is_pressed)
 {
-    printf( "mouse\n");
 }
 
 
@@ -133,10 +264,16 @@ Screen::Screen(
         timer(new QTimer(this)),
         notifyLog(fopen("texts/messages.txt", "at")),
         fileToShow(nullptr),
-        ascii(_ascii)
+        ascii(_ascii),
+
+      move_keys_pressed{false},
+      cam_pos(0.0f,0.0f,64.0f), cam_ang(m_Math::FM_PI2,0.0f,0.0f),
+      prev_frame_time( QTime::currentTime() ),
+      prev_fps_time( QTime::currentTime() ),
+      frame_count_in_last_second(0)
 {
-    screen_size_x= 640;
-    screen_size_y= 480;
+    screen_size_x= 1024;
+    screen_size_y= 768;
 
     window= new FregMainWindow(this);
     window->setFixedSize( screen_size_x, screen_size_y );
@@ -149,6 +286,9 @@ Screen::Screen(
     PRast_SetFramebuffer( (unsigned char*) image->constBits() );
 
     renderer= new s_WorldRenderer(wor);
+
+    cam_pos.x= pl->GlobalX();
+    cam_pos.y= pl->GlobalY();
 }
 
 
@@ -184,7 +324,7 @@ void FregMainWindow::paintEvent( QPaintEvent* event)
 {
     screen->Repaint();
     QWidget::update();
-    QThread::currentThread()->usleep( 5000 );
+    QThread::currentThread()->usleep( 1000 );
 }
 void Screen::CleanAll()
 {

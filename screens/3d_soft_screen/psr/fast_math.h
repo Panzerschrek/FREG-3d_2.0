@@ -139,6 +139,14 @@ inline int FastIntLog2( int x ) //returns index of first nonzero bit. if zero - 
 		bsr eax, ebx// scan bits to first nonzero and put it index into eax
 	}
 #else
+    #ifdef PSR_GCC_ASM32
+    int result;
+    asm(" bsr %1,%0\n\t"
+    :"=&abcd"(result)
+            :"bcdSDm"(x)
+            : );
+    return result;
+    #else
 	int log = -1;
 	int i= 1;
 	while( i <= x )
@@ -147,6 +155,7 @@ inline int FastIntLog2( int x ) //returns index of first nonzero bit. if zero - 
 		log++;
 	}
 	return log;
+    #endif
 #endif
 }
 inline int FastIntLog2Clamp0( int x ) //returns index of first nonzero bit. if zero - result is zero
@@ -159,6 +168,16 @@ inline int FastIntLog2Clamp0( int x ) //returns index of first nonzero bit. if z
 		cmovz eax, ebx// if x is zero, move zero to result
 	}
 #else
+    #ifdef PSR_GCC_ASM32
+    int result;
+    asm(
+    " bsr %1,%0\n\t"
+    "cmovz %1,%0\n\t"
+    :"=&abcd"(result)
+            :"bcdSDm"(x)
+            : );
+    return result;
+    #else
 	int log = -1;
 	int i= 1;
 	while( i <= x )
@@ -168,8 +187,23 @@ inline int FastIntLog2Clamp0( int x ) //returns index of first nonzero bit. if z
 	}
 	if( log == -1 ) log = 0;
 	return log;
+    #endif
 #endif
 }
+
+inline int Log2Ceil( int x )
+{
+    int i= 0;
+    if( x == 0 )
+        return 0;
+    x--;
+    while( x>0 )
+    {
+        x>>=1;i++;
+    }
+    return i;
+}
+
 
 inline int FastIntAbs( int x )
 {
@@ -181,10 +215,10 @@ inline int FastIntAbs( int x )
 		cmovs eax, x
 	}
 #else
-	int n_x= - x;
-	int s= n_x>>31;
-	return (x&s) | (n_x&(~s));
-	//return ( x > 0 ) ? x : -x;
+    //int n_x= - x;
+    //int s= n_x>>31;
+    //return (x&s) | (n_x&(~s));
+    return ( x > 0 ) ? x : -x;
 #endif
 }
 
@@ -198,10 +232,10 @@ inline int FastIntNegAbs( int x )
 		cmovns eax, x
 	}
 #else
-	int n_x= - x;
-	int s= n_x>>31;
-	return (n_x&s) | (x&(~s));
-	//return ( x < 0 ) ? x : -x;
+    //int n_x= - x;
+    //int s= n_x>>31;
+    //return (n_x&s) | (x&(~s));
+    return ( x < 0 ) ? x : -x;
 #endif
 }
 

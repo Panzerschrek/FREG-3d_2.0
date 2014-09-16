@@ -47,10 +47,10 @@ typedef unsigned short depth_buffer_t;
 
 #define PSR_MAX_NORMALIZED_LIGHT 127// color= ( normalized_light * 256 * color )/256
 
-#define PSR_MIN_ZMIN_FLOAT 0.0625f
-#define PSR_MIN_ZMIN (65536/16)// minimal value of zmin in fixed16_t format
-#define PSR_INV_MIN_ZMIN_INT 16
-#define PSR_INV_MIN_ZMIN_INT_LOG2 4
+#define PSR_MIN_ZMIN_FLOAT 0.25f
+#define PSR_MIN_ZMIN (65536/4)// minimal value of zmin in fixed16_t format
+#define PSR_INV_MIN_ZMIN_INT 4
+#define PSR_INV_MIN_ZMIN_INT_LOG2 2
 
 #define PSR_MAX_ZMAX (1024)// maximal value of zmax in INT format
 
@@ -62,6 +62,10 @@ typedef unsigned short depth_buffer_t;
 //if defined, z calculates by sse command per 4. incompatible with PSR_FAST_PERSECTIVE
 #ifdef PSR_MASM32
 #define PSR_SSE_Z_CALCULATION 1
+#endif
+#ifdef PSR_GCC_ASM32
+#define PSR_SSE_Z_CALCULATION 1
+#include <xmmintrin.h>
 #endif
 
 #define PSR_MAX_DEPTH_BUFFER_VALUE 65536//max depth buffer value + 1
@@ -85,11 +89,11 @@ typedef unsigned short depth_buffer_t;
 
 #define PSR_FRAMEBUFFER_ALIGNMENT 64
 //compiler-dependent alignment derectives:
-//for visual c++
+//for visual c++:
 //#define PSR_ALIGN_4 __declspec(align(4))
 //#define PSR_ALIGN_8 __declspec(align(8))
 //#define PSR_ALIGN_16 __declspec(align(16))
-//TODO for gcc and other compilers
+//for GCC:
 #define PSR_ALIGN_4 __attribute__ ((aligned (4)))
 #define PSR_ALIGN_8 __attribute__ ((aligned (8)))
 #define PSR_ALIGN_16 __attribute__ ((aligned (16)))

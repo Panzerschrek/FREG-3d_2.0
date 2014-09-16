@@ -5,7 +5,6 @@
 #include "fixed.h"
 #include "fast_math.h"
 #include "psr.h"
-#include "psr_mmx.h"
 #include "rasterization.h"
 
 namespace VertexProcessing
@@ -489,24 +488,12 @@ void DrawSpriteToBuffer( char* buff, int x0, int y0, int x1, int y1, fixed16_t d
 */
 
 int (*DrawWorldTriangleToBuffer)(char* buff)= VertexProcessing::DrawTriangleToBuffer
-< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, LIGHTING_FROM_LIGHTMAP, ADDITIONAL_EFFECT_NONE >;
-int (*DrawWorldTriangleNoLightmapToBuffer)(char* buff)= VertexProcessing::DrawTriangleToBuffer
+< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, LIGHTING_CONSTANT, ADDITIONAL_EFFECT_NONE >;
+
+int (*DrawWorldTriangleSimpleToBuffer)(char* buff)= VertexProcessing::DrawTriangleToBuffer
 < COLOR_FROM_TEXTURE, TEXTURE_NEAREST, LIGHTING_NONE, ADDITIONAL_EFFECT_NONE >;
 
-int (*DrawWorldCachedTriangleToBuffer)(char* buff)= VertexProcessing::DrawTriangleToBuffer
-< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, LIGHTING_NONE, ADDITIONAL_EFFECT_NONE >;
 
-
-int (*DrawBeamTriangleToBuffer)( char* buff )= VertexProcessing::DrawTriangleToBuffer
-< COLOR_CONSTANT, TEXTURE_NONE, LIGHTING_NONE, ADDITIONAL_EFFECT_NONE >;
-
-int (*DrawSkyTriangleToBuffer)( char* buff )= VertexProcessing::DrawTriangleToBuffer
-<COLOR_FROM_TEXTURE, TEXTURE_NEAREST, LIGHTING_NONE, ADDITIONAL_EFFECT_NONE>;
-
-int (*DrawTexturedModelTriangleToBuffer)(char*buff)= VertexProcessing::DrawTriangleToBuffer
-< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, LIGHTING_PER_VERTEX_COLORED, ADDITIONAL_EFFECT_NONE >;
-int (*DrawFullbrightTexturedModelTriangleToBuffer)(char*buff)= VertexProcessing::DrawTriangleToBuffer
-< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, LIGHTING_NONE, ADDITIONAL_EFFECT_NONE >;
 
 
 void (*DrawParticleSpriteToBuffer)( char* buff, int x0, int y0, int x1, int y1, fixed16_t depth )= VertexProcessing::DrawSpriteToBuffer;

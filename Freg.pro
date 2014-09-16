@@ -22,9 +22,10 @@ VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 TEMPLATE = app
 
+#TODO - disable -ftree-loop-distribute-patterns
 QMAKE_CXXFLAGS += -std=c++11
 #QMAKE_CXXFLAGS += -Weffc++ -Wold-style-cast -Werror
-QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef
+QMAKE_CXXFLAGS += -Wfloat-equal -Woverloaded-virtual -Wundef --save-temps -march=pentium4 -fno-tree-loop-distribute-patterns
 
 #QMAKE_CXXFLAGS_DEBUG += -fno-inline
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -73,6 +74,12 @@ cursed_screen {
 	HEADERS += screens/3d_soft_screen/psr/rendering_commands.h
 	HEADERS += screens/3d_soft_screen/s_world_renderer.h
 	HEADERS += screens/3d_soft_screen/psr/fixed.h
+	HEADERS += screens/3d_soft_screen/psr/fast_math.h
+	HEADERS += screens/3d_soft_screen/psr/vertex_processing.h
+	HEADERS += screens/math_lib/vec.h
+	HEADERS += screens/math_lib/rand.h
+	HEADERS += screens/math_lib/matrix.h
+	HEADERS += screens/math_lib/m_math.h
 
 	SOURCES += screens/3d_soft_screen/s_chunk_info.cpp
 	SOURCES += screens/3d_soft_screen/s_world_renderer.cpp
@@ -80,6 +87,11 @@ cursed_screen {
 	SOURCES += screens/3d_soft_screen/psr/texture.cpp
 	SOURCES += screens/3d_soft_screen/psr/rendering_commands.cpp
 	SOURCES += screens/3d_soft_screen/psr/fullscreen_draw_commands.cpp
+	SOURCES += screens/3d_soft_screen/psr/vertex_processing.cpp
+	SOURCES += screens/math_lib/vec.cpp
+	SOURCES += screens/math_lib/matrix.cpp
+	SOURCES += screens/math_lib/rand.cpp
+	SOURCES += screens/math_lib/m_math.cpp
 } else {
     error("define screen type in CONFIG!")
 }
