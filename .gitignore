@@ -28,6 +28,11 @@ screens/3d_soft_screen/psr/*
 !screens/3d_soft_screen/psr/*.h
 !screens/3d_soft_screen/psr/*.cpp
 
+screens/math_lib/*
+!screens/math_lib
+!screens/math_lib/*.h
+!screens/math_lib/*.cpp
+
 !help_*
 help_*/*
 !help_*/*.md
