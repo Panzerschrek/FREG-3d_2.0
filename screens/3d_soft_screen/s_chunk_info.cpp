@@ -121,12 +121,13 @@ void s_ChunkInfo::GenChunk()
     //something unfinished:
     //TODO: set up textures, generate chunk borders
 
-    const fixed16_t tex_size= 65536 * 16;
+    const fixed16_t tex_size= 65536 * 32;
 
     int x, y, z;
     s_WorldQuad* quad= quad_buffer[1].quads;
+    Block* b;
 
-    int X= shred->Longitude() * SHRED_WIDTH, Y= shred->Latitude()  * SHRED_WIDTH;
+    int X= shred->Latitude() * SHRED_WIDTH, Y= shred->Longitude()  * SHRED_WIDTH;
     //int X= 0, Y= 0;
 
     for( x= 0; x< SHRED_WIDTH  - 1 ; x++ )
@@ -142,6 +143,18 @@ void s_ChunkInfo::GenChunk()
             {
                 if( block_t != *t_up )
                 {
+                    if( block_t > *t_up )
+                    {
+                        quad->normal= NORMAL_Z_POS;
+                        quad->light= shred->Lightmap( x, y, z )&15;
+                        b= shred->GetBlock( x, y, z+1 );
+                    }
+                    else
+                    {
+                        quad->normal= NORMAL_Z_NEG;
+                        quad->light= shred->Lightmap( x, y, z+1 )&15;
+                        b= shred->GetBlock( x, y, z );
+                    }
                     quad->coord[2]= quad->coord[5]= quad->coord[8]= quad->coord[11]= float(z+1);
                     //vertex 0 - (x,y)
                     //vertex 1 (x,y+1)
@@ -151,45 +164,69 @@ void s_ChunkInfo::GenChunk()
                     quad->coord[9]= quad->coord[6]= float(X+x+1);
                     quad->coord[10]= quad->coord[1]= float(Y+y);
                     quad->coord[7]= quad->coord[4]= float(Y+y+1);
-                    quad->normal= (block_t > *t_up) ? NORMAL_Z_POS : NORMAL_Z_NEG;
 
                     quad->tc[0]= quad->tc[2]= 0;
                     quad->tc[4]= quad->tc[6]= tex_size;
                     quad->tc[1]= quad->tc[7]= 0;
                     quad->tc[3]= quad->tc[5]= tex_size;
+                    if( b->Kind() == LIQUID ) quad->tex_id= 1; else quad->tex_id = 0;
 
                     quad++;
                 }//if is up face
                 if( block_t != *t_x )
                 {
+                    if( block_t > *t_x )
+                    {
+                        quad->normal= NORMAL_X_POS;
+                        quad->light= shred->Lightmap( x, y, z )&15;
+                         b= shred->GetBlock( x+1, y, z );
+                    }
+                    else
+                    {
+                        quad->normal= NORMAL_X_NEG;
+                        quad->light= shred->Lightmap( x+1, y, z )&15;
+                        b= shred->GetBlock( x, y, z );
+                    }
                     quad->coord[0]= quad->coord[3]= quad->coord[6]= quad->coord[9]= float(X+x+1);
 
                     quad->coord[4]= quad->coord[1]= float(Y+y);
                     quad->coord[10]= quad->coord[7]= float(Y+y+1);
                     quad->coord[11]= quad->coord[2]= float(z);
                     quad->coord[8]= quad->coord[5]= float(z+1);
-                    quad->normal= (block_t > *t_x) ? NORMAL_X_POS : NORMAL_X_NEG;
 
                     quad->tc[0]= quad->tc[2]= 0;
                     quad->tc[4]= quad->tc[6]= tex_size;
                     quad->tc[1]= quad->tc[7]= 0;
                     quad->tc[3]= quad->tc[5]= tex_size;
+                    if( b->Kind() == LIQUID ) quad->tex_id= 1; else quad->tex_id = 0;
 
                     quad++;
                 }//if is x+ face
                 if( block_t != *t_y )
                 {
+                    if( block_t > *t_y )
+                    {
+                        quad->normal= NORMAL_Y_POS;
+                        quad->light= shred->Lightmap( x, y, z )&15;
+                         b= shred->GetBlock( x, y+1, z );
+                    }
+                    else
+                    {
+                        quad->normal= NORMAL_Y_NEG;
+                        quad->light= shred->Lightmap( x, y+1, z )&15;
+                         b= shred->GetBlock( x, y, z );
+                    }
                     quad->coord[1]= quad->coord[4]= quad->coord[7]= quad->coord[10]= float(Y+y+1);
                     quad->coord[11]= quad->coord[2]= float(z);
                     quad->coord[5]= quad->coord[8]= float(z+1);
                     quad->coord[3]= quad->coord[0]= float(X+x);
                     quad->coord[9]= quad->coord[6]= float(X+x+1);
-                    quad->normal= (block_t > *t_y) ? NORMAL_Y_POS : NORMAL_Y_NEG;
 
                     quad->tc[0]= quad->tc[2]= 0;
                     quad->tc[4]= quad->tc[6]= tex_size;
                     quad->tc[1]= quad->tc[7]= 0;
                     quad->tc[3]= quad->tc[5]= tex_size;
+                    if( b->Kind() == LIQUID ) quad->tex_id= 1; else quad->tex_id = 0;
 
                     quad++;
                 }//if is y+ chunk

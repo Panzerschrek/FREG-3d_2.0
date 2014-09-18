@@ -171,8 +171,8 @@ inline int FastIntLog2Clamp0( int x ) //returns index of first nonzero bit. if z
     #ifdef PSR_GCC_ASM32
     int result;
     asm(
-    " bsr %1,%0\n\t"
-    "cmovz %1,%0\n\t"
+    "bsr %1,%0 \n\t"
+    "cmovz %1,%0 \n\t"
     :"=&abcd"(result)
             :"bcdSDm"(x)
             : );

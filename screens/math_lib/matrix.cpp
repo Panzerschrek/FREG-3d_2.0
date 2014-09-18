@@ -115,6 +115,37 @@ m_Mat4& m_Mat4::operator*=( m_Mat4& m )
 m_Vec3	m_Mat4::operator*( m_Vec3& v )
 {
     m_Vec3 r;
+/*
+ * xmm0 - initial vector
+*/
+    /*float tmp_v[4];
+    tmp_v[0]= v.x;
+    tmp_v[1]= v.y;
+    tmp_v[2]= v.z;
+    tmp_v[3]= 1.0f;
+    asm(
+    "movups (%2), %%xmm0 \n\t"
+    "movups (%1), %%xmm1 \n\t"
+    "mulps %%xmm0, %%xmm1 \n\t"//xmm1 - result of first multiplication
+    "movups 16+(%1), %%xmm2 \n\t"
+    "mulps %%xmm0, %%xmm2 \n\t"//xmm2 - result of second multiplication
+    "movups 32+(%1), %%xmm3 \n\t"
+    "mulps %%xmm0, %%xmm3 \n\t"//xmm3 - result of thitd multiplication
+
+    "haddps %%xmm1, %%xmm1 \n\t"
+    "haddps %%xmm2, %%xmm2 \n\t"
+    "haddps %%xmm3, %%xmm3 \n\t"
+    "haddps %%xmm1, %%xmm1 \n\t"
+    "haddps %%xmm2, %%xmm2 \n\t"
+    "haddps %%xmm3, %%xmm3 \n\t"
+    "movss %%xmm1, (%0) \n\t"
+    "movss %%xmm2, 4+(%0) \n\t"
+    "movss %%xmm3, 8+(%0) \n\t"
+                :
+                :"rm"(&r.x), "r"(&this->value), "r"(tmp_v)
+                :"%xmm0","%xmm1","%xmm2","%xmm3", "memory" );
+    return r;*/
+
     r.x= value[0] * v.x + value[1] * v.y + value[2] * v.z + value[3];
     r.y= value[4] * v.x + value[5] * v.y + value[6] * v.z + value[7];
     r.z= value[8] * v.x + value[9] * v.y + value[10]* v.z + value[11];

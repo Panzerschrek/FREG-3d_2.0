@@ -1074,8 +1074,8 @@ inline void CalculateTetrapixelZ()
         movq qword ptr[ tetrapixel_z ], mm6
         movq qword ptr[ tetrapixel_z + 8 ], mm7
     }
-    #endif
-    #ifdef PSR_GCC_ASM32
+#endif
+#ifdef PSR_GCC_ASM32
     asm(
     "cvtpi2ps (%1), %%xmm2\n\t"
     "cvtpi2ps (%1+8), %%xmm3\n\t"
@@ -1091,7 +1091,7 @@ inline void CalculateTetrapixelZ()
     :"m"(tetrapixel_z), "m"(inv_z_v_int), "x"(*((__m128i*)inv_delta_multipler_vec))
         :"%xmm1", "%xmm2", "%xmm3", "%mm6", "%mm7"
           );
-    #endif
+#endif
 }
 #endif
 
@@ -1111,6 +1111,8 @@ fixed16_t line_color[4], d_line_color[4];
 fixed16_t line_light, d_line_light;
 fixed16_t line_lod, d_line_lod;
 fixed16_t line_inv_z, d_line_inv_z;
+
+
 
 
 template<
@@ -2540,8 +2542,8 @@ extern "C"
 void (*DrawWorldTriangle)(char*buff)= Draw::DrawTriangleFromBuffer
 < COLOR_FROM_TEXTURE, TEXTURE_NEAREST, BLENDING_NONE, ALPHA_TEST_NONE, LIGHTING_CONSTANT, LIGHTMAP_LINEAR, ADDITIONAL_EFFECT_NONE, CURRENT_DEPTH_TEST_TYPE, true >;
 
-void (*DrawWorldTriangleSimple)(char*buff)= Draw::DrawTriangleFromBuffer
-< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, BLENDING_NONE, ALPHA_TEST_NONE, LIGHTING_CONSTANT, LIGHTMAP_LINEAR, ADDITIONAL_EFFECT_NONE, CURRENT_DEPTH_TEST_TYPE, true >;
+void (*DrawWorldWaterTriangle)(char*buff)= Draw::DrawTriangleFromBuffer
+< COLOR_FROM_TEXTURE, TEXTURE_NEAREST, BLENDING_NONE, ALPHA_TEST_NONE, LIGHTING_CONSTANT, LIGHTMAP_LINEAR, ADDITIONAL_EFFECT_TURBULENCE, CURRENT_DEPTH_TEST_TYPE, true >;
 
 
 }//extern "C"

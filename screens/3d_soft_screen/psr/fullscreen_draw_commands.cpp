@@ -249,10 +249,8 @@ extern "C" void PRast_MirrorFramebufferVertical()
 
 extern "C" void PRast_ClearColorBuffer( const unsigned char* color )
 {
-
 	int* d= (int*)screen_buffer;
 	int* d_end= (int*)( screen_buffer + screen_size_x * screen_size_y * 4 );
-	
 #ifdef PSR_MASM32
 	unsigned char clear_value[]= { color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3] };
 	__asm
@@ -280,7 +278,35 @@ next64bytes:
 		cmp ecx, edx 
 		jne next64bytes
 		emms
-	}
+    }
+#else
+#ifdef PSR_GCC_ASM32
+        unsigned char clear_value[]= { color[0], color[1], color[2], color[3], color[0], color[1], color[2], color[3] };
+        asm(
+        "movq (%2), %%mm0 \n\t"
+        "movq %%mm0, %%mm1 \n\t"
+        "movq %%mm0, %%mm2 \n\t"
+        "movq %%mm0, %%mm3 \n\t"
+        "movq %%mm0, %%mm4 \n\t"
+        "movq %%mm0, %%mm5 \n\t"
+        "movq %%mm0, %%mm6 \n\t"
+        "movq %%mm0, %%mm7 \n\t"
+        "next64_bytes: \n\t"
+        "movq  %%mm0,  0(%0) \n\t"
+        "movq  %%mm1,  8(%0) \n\t"
+        "movq  %%mm2, 16(%0) \n\t"
+        "movq  %%mm3, 24(%0) \n\t"
+        "movq  %%mm4, 32(%0) \n\t"
+        "movq  %%mm5, 40(%0) \n\t"
+        "movq  %%mm6, 48(%0) \n\t"
+        "movq  %%mm7, 56(%0) \n\t"
+        "addl $64, %0 \n\t"
+        "cmpl %0, %1 \n\t"
+        "jne next64_bytes \n\t"
+        "emms"
+        : //nothing
+        : "abcdSD"(d), "abcdSD"(d_end), "r" (clear_value)
+        : "memory", "%mm0", "%mm1", "%mm2", "%mm3", "%mm4", "%mm5", "%mm6", "%mm7" );
 #else
 	register int clear_value= color[0] | (color[1]<<8) | (color[2]<<16) | (color[3]<<24);
 	for( ; d!=d_end; d+=8 )
@@ -295,6 +321,7 @@ next64bytes:
 		d[7]= clear_value;
 	}
 #endif
+#endif
 }
 
 
@@ -303,7 +330,6 @@ extern "C" void PRast_ClearDepthBuffer( depth_buffer_t value )
 	//clear depth byffer per double word, not word
 	unsigned int* d= (unsigned int*) depth_buffer;
 	unsigned int* d_end= d + screen_size_x * screen_size_y * sizeof( depth_buffer_t )/sizeof(unsigned int);
-
 	//fast clearing of depth buffer using mmx registers. or not fast. screen_size_x * screen_size_y must be dividable by 64
 #ifdef PSR_MASM32
 	depth_buffer_t clear_value[]= { value, value, value, value };
@@ -335,6 +361,35 @@ next64bytes:
 
 	}
 #else
+#ifdef PSR_GCC_ASM32
+        depth_buffer_t clear_value[]= { value, value, value, value };
+        asm(
+        "movq (%2), %%mm0 \n\t"
+        "movq %%mm0, %%mm1 \n\t"
+        "movq %%mm0, %%mm2 \n\t"
+        "movq %%mm0, %%mm3 \n\t"
+        "movq %%mm0, %%mm4 \n\t"
+        "movq %%mm0, %%mm5 \n\t"
+        "movq %%mm0, %%mm6 \n\t"
+        "movq %%mm0, %%mm7 \n\t"
+        "next64_bytes2: \n\t"
+        "movq  %%mm0,  0(%0) \n\t"
+        "movq  %%mm1,  8(%0) \n\t"
+        "movq  %%mm2, 16(%0) \n\t"
+        "movq  %%mm3, 24(%0) \n\t"
+        "movq  %%mm4, 32(%0) \n\t"
+        "movq  %%mm5, 40(%0) \n\t"
+        "movq  %%mm6, 48(%0) \n\t"
+        "movq  %%mm7, 56(%0) \n\t"
+        "addl $64, %0 \n\t"
+        "cmpl %0, %1 \n\t"
+        "jne next64_bytes2 \n\t"
+        "emms"
+        : //nothing
+        : "abcdSD"(d), "abcdSD"(d_end), "r" (clear_value)
+        : "memory", "%mm0", "%mm1", "%mm2", "%mm3", "%mm4", "%mm5", "%mm6", "%mm7" );
+#else
+
 		register int clear_value= value | (value<<16);
 		for( ; d!= d_end; d+=8 )
 		{
@@ -347,6 +402,7 @@ next64bytes:
 			d[6]= clear_value;
 			d[7]= clear_value;
 		}
+#endif
 #endif
 }
 

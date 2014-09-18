@@ -82,7 +82,7 @@ inline fixed16_t Fixed16Div( fixed16_t a, fixed16_t b )
 		idiv b//result in eax
 	}
 #else
-    #ifdef PSR_GCC_ASM32
+#ifdef PSR_GCC_ASM32
     int result;
     asm(
     "cdq\n\t"
@@ -93,11 +93,11 @@ inline fixed16_t Fixed16Div( fixed16_t a, fixed16_t b )
             :"a"(a)/*move me 'a', into eax, please*/, "bcSDm"(b)
             :"%edx");
     return result;
-    #else
+#else
 	long long int y= a;
 	y<<=16;
     return int( y / b );
-    #endif
+#endif
 #endif
 }
 
@@ -114,7 +114,7 @@ inline fixed16_t Fixed16Invert( fixed16_t b )
 		idiv b//result in eax
 	}
 #else
-    #ifdef PSR_GCC_ASM32
+#ifdef PSR_GCC_ASM32
     int result;
     asm(
     "movl $1, %%edx\n\t"
@@ -124,10 +124,10 @@ inline fixed16_t Fixed16Invert( fixed16_t b )
             :"bcSDm"(b)
             :"%edx");
     return result;
-    #else
+#else
 	long long int y(4294967296LL);
 	return int( y / b );
-    #endif
+#endif
 #endif
 }
 
@@ -162,7 +162,7 @@ inline fixed16_t Fixed16DepthInvert( fixed16_t b )
 
 inline int Fixed16MulResultToInt( fixed16_t a, fixed16_t b )
 {
-	#ifdef PSR_MASM32
+#ifdef PSR_MASM32
 	__asm
 	{
 		mov eax, a

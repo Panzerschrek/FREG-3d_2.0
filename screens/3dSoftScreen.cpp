@@ -169,17 +169,17 @@ void Screen::CalculateFPS()
 void Screen::CamMove()
 {
     float move_speed= 10.0f;
-    float turn_speed= 0.5f;
+    float turn_speed= 0.9f;
 
     float dt= frame_time_delta;
 
     if( move_keys_pressed[ KEY_TURN_LEFT ] )
     {
-        cam_ang.z-= dt * turn_speed;
+        cam_ang.z+= dt * turn_speed;
     }
     if( move_keys_pressed[ KEY_TURN_RIGHT ] )
     {
-        cam_ang.z+= dt * turn_speed;
+        cam_ang.z-= dt * turn_speed;
     }
     if( cam_ang.z > m_Math::FM_2PI ) cam_ang.z-= m_Math::FM_2PI;
     else if( cam_ang.z < 0.0f ) cam_ang.z+= m_Math::FM_2PI;
@@ -210,13 +210,13 @@ void Screen::CamMove()
 
     if( move_keys_pressed[ KEY_MOVE_LEFT ] )
     {
-        cam_pos.y-= dt*move_speed * m_Math::Cos( cam_ang.z + m_Math::FM_PI2 );
-        cam_pos.x-= dt*move_speed * m_Math::Sin( cam_ang.z + m_Math::FM_PI2 );
+        cam_pos.y+= dt*move_speed * m_Math::Cos( cam_ang.z + m_Math::FM_PI2 );
+        cam_pos.x+= dt*move_speed * m_Math::Sin( cam_ang.z + m_Math::FM_PI2 );
     }
     if( move_keys_pressed[ KEY_MOVE_RIGHT ] )
     {
-        cam_pos.y-= dt*move_speed * m_Math::Cos( cam_ang.z - m_Math::FM_PI2 );
-        cam_pos.x-= dt*move_speed * m_Math::Sin( cam_ang.z - m_Math::FM_PI2 );
+        cam_pos.y+= dt*move_speed * m_Math::Cos( cam_ang.z - m_Math::FM_PI2 );
+        cam_pos.x+= dt*move_speed * m_Math::Sin( cam_ang.z - m_Math::FM_PI2 );
     }
 
     if( move_keys_pressed[ KEY_MOVE_UP ] )
@@ -267,7 +267,7 @@ Screen::Screen(
         ascii(_ascii),
 
       move_keys_pressed{false},
-      cam_pos(0.0f,0.0f,64.0f), cam_ang(m_Math::FM_PI2,0.0f,0.0f),
+      cam_pos(pl->GlobalX(),pl->GlobalY(),pl->Z()), cam_ang(m_Math::FM_PI2,0.0f,0.0f),
       prev_frame_time( QTime::currentTime() ),
       prev_fps_time( QTime::currentTime() ),
       frame_count_in_last_second(0)
@@ -287,8 +287,6 @@ Screen::Screen(
 
     renderer= new s_WorldRenderer(wor);
 
-    cam_pos.x= pl->GlobalX();
-    cam_pos.y= pl->GlobalY();
 }
 
 
@@ -324,7 +322,8 @@ void FregMainWindow::paintEvent( QPaintEvent* event)
 {
     screen->Repaint();
     QWidget::update();
-    QThread::currentThread()->usleep( 1000 );
+    //if( frame_time_delta < 0.002f )
+    //QThread::currentThread()->usleep( 1000 );
 }
 void Screen::CleanAll()
 {
