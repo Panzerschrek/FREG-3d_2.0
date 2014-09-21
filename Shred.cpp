@@ -76,9 +76,7 @@ bool Shred::LoadShred() {
                 Active * const active = (blocks[x][y][z] =
                     BlockManager::BlockFromFile(in, kind, sub))->ActiveBlock();
                 if ( active != nullptr ) {
-                    active->SetXyz(
-                        (ShredX() << SHRED_WIDTH_SHIFT) | x,
-                        (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
+                    active->SetXyz(x, y, z);
                     RegisterInit(active);
                     Falling * const falling = active->ShouldFall();
                     if ( falling != nullptr && falling->IsFalling() ) {
@@ -273,17 +271,12 @@ QLinkedList<Active * const>::const_iterator Shred::ShiningEnd() const {
 }
 
 void Shred::ReloadTo(const dirs direction) {
-    void (Active::* reload)() = nullptr;
     switch ( direction ) {
-    case NORTH: reload = &Active::ReloadToNorth; ++shredY; break;
-    case SOUTH: reload = &Active::ReloadToSouth; --shredY; break;
-    case EAST:  reload = &Active::ReloadToEast;  --shredX; break;
-    case WEST:  reload = &Active::ReloadToWest;  ++shredX; break;
+    case NORTH: ++shredY; break;
+    case SOUTH: --shredY; break;
+    case EAST:  --shredX; break;
+    case WEST:  ++shredX; break;
     default: Q_UNREACHABLE(); break;
-    }
-    activeListAll.removeAll(nullptr);
-    for (auto i=activeListAll.constBegin(); i!=activeListAll.constEnd(); ++i) {
-        ((*i)->*reload)();
     }
 }
 
@@ -303,9 +296,7 @@ void Shred::SetBlockNoCheck(Block * const block,
 {
     Active * const active = ( blocks[x][y][z]=block )->ActiveBlock();
     if ( active != nullptr ) {
-        active->SetXyz(
-            (ShredX() << SHRED_WIDTH_SHIFT) | x,
-            (ShredY() << SHRED_WIDTH_SHIFT) | y, z );
+        active->SetXyz(x, y, z);
         Register(active);
     }
 }
@@ -586,9 +577,14 @@ int Shred::CountShredTypeAround(const int type) const {
     return result;
 }
 
+bool Shred::InBounds(const int z) { return (0 <= z && z < HEIGHT-1 ); }
+
+bool Shred::InBounds(const int x, const int y) {
+    return (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH);
+}
+
 bool Shred::InBounds(const int x, const int y, const int z) {
-    return ( (0 <= x && x < SHRED_WIDTH) && (0 <= y && y < SHRED_WIDTH)
-        && 0 <=z && z < HEIGHT-1 );
+    return InBounds(x, y) && InBounds(z);
 }
 
 void Shred::Dew(const int kind, const int sub) {

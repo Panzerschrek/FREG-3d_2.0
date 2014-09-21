@@ -37,22 +37,19 @@
         #include "screens/TextScreen.h"
         #include <QCoreApplication>
         typedef QCoreApplication Application;
-    #else
-        #ifdef SOFTWARE_SCREEN_3D
-            #include "screens/3dSoftScreen.h"
-            #include <QApplication>
-            typedef QApplication Application;
-        #else
-            #include <QApplication>
-            typedef QApplication Application;
-        #endif
+    #endif
+    #ifdef SOFTWARE_SCREEN_3D
+        #include "screens/3dSoftScreen.h"
+        #include <QApplication>
+        typedef QApplication Application;
     #endif
 #endif
 
 #ifdef Q_OS_WIN32
 const QString home_path = "";
 #else
-const QString home_path = QDir::homePath() + "/.freg/";
+//const QString home_path = QDir::homePath() + "/.freg/";
+const QString home_path = "";
 #endif
 
 int main(int argc, char ** argv) {
@@ -110,12 +107,12 @@ int main(int argc, char ** argv) {
         parser.value(world_argument) :
         sett.value("current_world", "mu").toString();
     sett.setValue("current_world", worldName);
+    if ( not QDir(home_path).mkpath(worldName) ) {
+        puts(qPrintable(QObject::tr("Error generating world.")));
+        return EXIT_FAILURE;
+    }
 
     if ( parser.isSet(generate) ) {
-        if ( not QDir(home_path).mkpath(worldName) ) {
-            puts(qPrintable(QObject::tr("Error generating world.")));
-            return EXIT_FAILURE;
-        }
         WorldMap::GenerateMap(
             worldName,
             parser.value(map_size).toUShort(),

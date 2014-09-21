@@ -125,9 +125,8 @@ char Screen::CharNumberFront(const int i, const int j) const {
             dist+'0' : ' ';
 }
 
-int Screen::RandomBlink() const {
-    return ( (random_blink >>= 1) & 1 ) ? 0 : A_REVERSE;
-}
+int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
+bool Screen::RandomBit()   const { return (randomBlink >>= 1) & blinkOn; }
 
 int Screen::Color(const int kind, const int sub) const {
     switch ( kind ) { // foreground_background
@@ -135,6 +134,8 @@ int Screen::Color(const int kind, const int sub) const {
         case WATER:     return COLOR_PAIR( CYAN_BLUE  ) | RandomBlink();
         case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE );
         case ACID:      return COLOR_PAIR(GREEN_GREEN ) |A_BOLD |RandomBlink();
+        case H_MEAT:
+        case A_MEAT:    return COLOR_PAIR(BLACK_RED);
         default:        return COLOR_PAIR(  RED_YELLOW) | RandomBlink();
         } break;
     case FALLING: switch ( sub ) {
@@ -160,7 +161,7 @@ int Screen::Color(const int kind, const int sub) const {
         case ROSE:       return COLOR_PAIR(    RED_GREEN );
         case CLAY:       return COLOR_PAIR(  WHITE_RED   );
         case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
-        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW);
+        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW) | RandomBlink();
         case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
         case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
         case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
@@ -169,7 +170,8 @@ int Screen::Color(const int kind, const int sub) const {
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
             switch ( w->PartOfDay() ) {
-            case TIME_NIGHT:   return COLOR_PAIR(WHITE_BLACK) | A_BOLD;
+            case TIME_NIGHT: return
+                COLOR_PAIR(WHITE_BLACK) | ( RandomBit() ? A_BOLD : 0 );
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
@@ -457,7 +459,9 @@ void Screen::PrintHUD() {
     }
     Block * const focused = GetFocusedBlock();
     if ( Block::GetSubGroup(focused->Sub()) != GROUP_AIR ) {
-        const int left_border = (SCREEN_SIZE*2+2) * (IsScreenWide() ? 2 : 1);
+        const int left_border = IsScreenWide() ?
+            (SCREEN_SIZE*2+2) * 2 :
+            SCREEN_SIZE*2+2 - 15;
         PrintBar(left_border - 15,
             Color(focused->Kind(), focused->Sub()),
             (focused->IsAnimal() == nullptr) ? '+' : '*',
@@ -539,7 +543,7 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
         ( SHRED_WIDTH-SCREEN_SIZE )/2;
     for (int j=start_y; j<SCREEN_SIZE+start_y; ++j, waddstr(window, "\n_"))
     for (int i=start_x; i<SCREEN_SIZE+start_x; ++i ) {
-        random_blink = qrand();
+        randomBlink = qrand();
         Shred * const shred = w->GetShred(i, j);
         const int i_in = Shred::CoordInShred(i);
         const int j_in = Shred::CoordInShred(j);
@@ -634,7 +638,7 @@ void Screen::PrintFront(const dirs dir) const {
     (void)wmove(rightWin, 1, 1);
     for (int k=k_start; k>k_start-SCREEN_SIZE; --k, waddstr(rightWin, "\n_")) {
         for (*x=x_start; *x!=x_end; *x+=x_step) {
-            random_blink = qrand();
+            randomBlink = qrand();
             for (*z=z_start; *z!=z_end && w->GetBlock(i, j, k)->
                         Transparent()==INVISIBLE;
                     *z += z_step);
@@ -815,14 +819,15 @@ Screen::Screen(
         beepOn (settings.value("beep_on",  false).toBool()),
         flashOn(settings.value("flash_on", true ).toBool()),
         ascii(_ascii),
-        arrows({'.', 'x',
+        blinkOn(settings.value("blink_on", true).toBool()),
+        arrows{'.', 'x',
             ascii ? '^' : 0x2191,
             ascii ? 'v' : 0x2193,
             ascii ? '>' : 0x2192,
             ascii ? '<' : 0x2190
-        }),
+        },
         screen(newterm(nullptr, stdout, stdin)),
-        random_blink()
+        randomBlink()
 {
     #ifndef Q_OS_WIN32
         set_escdelay(10);
@@ -833,10 +838,13 @@ Screen::Screen(
     nonl();
     keypad(stdscr, TRUE); // use arrows
     memset(windows, 0, sizeof(windows));
-    if ( LINES < 41 ) {
+    if ( LINES < 41 && IsScreenWide() ) {
         printf("Make your terminal height to be at least 41 lines.\n");
         error = HEIGHT_NOT_ENOUGH;
         return;
+    } else if ( LINES < 39 ) {
+        printf("Make your terminal height to be at least 39 lines.\n");
+        error = HEIGHT_NOT_ENOUGH;
     }
     // all available color pairs (maybe some of them will not be used)
     const int colors[] = { // do not change colors order!
@@ -853,7 +861,7 @@ Screen::Screen(
         init_pair(i, colors[(i-1)/8], colors[(i-1)%8]);
     }
     const int preferred_width = (SCREEN_SIZE*2+2)*2;
-    if ( COLS >= preferred_width ) {
+    if ( IsScreenWide() ) {
         const int left_border = COLS/2-SCREEN_SIZE*2-2;
         rightWin  = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, COLS/2);
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
@@ -864,9 +872,10 @@ Screen::Screen(
     } else if ( COLS >= preferred_width/2 ) {
         const int left_border = COLS/2-SCREEN_SIZE-1;
         leftWin   = newwin(SCREEN_SIZE+2, SCREEN_SIZE*2+2, 0, left_border);
-        hudWin    = newwin(3, SCREEN_SIZE*2+2, SCREEN_SIZE+2, left_border);
-        notifyWin = newwin(21,SCREEN_SIZE*2+2, SCREEN_SIZE+2+3,left_border+20);
-        actionWin = newwin(0, 20, SCREEN_SIZE+2+3, left_border);
+        hudWin    = newwin(2,SCREEN_SIZE*2+2-15, SCREEN_SIZE+2,left_border+15);
+        notifyWin = newwin(21, SCREEN_SIZE*2+2-15,
+            SCREEN_SIZE+2+2, left_border+15);
+        actionWin = newwin(0, 15, SCREEN_SIZE+2, left_border);
     } else {
         puts(qPrintable(tr("Set your terminal width at least %1 chars.").
             arg(SCREEN_SIZE*2+2)));
@@ -886,10 +895,9 @@ Screen::Screen(
         (settings.value("action_mode", ACTION_USE).toInt()));
     Print();
     Notify(tr("--- Game started. Press 'H' for help. ---"));
-    if ( COLS < preferred_width ) {
-        Notify(tr("For better gameplay "));
-        Notify(tr("set your terminal width at least %1 chars.").
-            arg(preferred_width));
+    if ( not IsScreenWide() ) {
+        Notify(tr("For better gameplay set your"));
+        Notify(tr("terminal width at least %1 chars.").arg(preferred_width));
     }
 
     input->start();
@@ -919,6 +927,7 @@ Screen::~Screen() {
     settings.setValue("last_command", previousCommand);
     settings.setValue("beep_on",  beepOn);
     settings.setValue("flash_on", flashOn);
+    settings.setValue("blink_on", blinkOn);
 }
 
 void Screen::PrintBar(const int x, const int attr, const int ch,
@@ -928,7 +937,7 @@ void Screen::PrintBar(const int x, const int attr, const int ch,
     mvwprintw(hudWin, 0, x,
         value_position_right ? "[..........]%hd" : "%3hd[..........]",percent);
     wattrset(hudWin, attr);
-    const String str(10, QChar(ch));
+    const QString str(10, QChar(ch));
     mvwaddstr(hudWin, 0, x + (not value_position_right ? 4 : 1),
         qPrintable(str.left(percent/10)));
 }

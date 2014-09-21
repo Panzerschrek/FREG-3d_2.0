@@ -80,6 +80,7 @@ cursed_screen {
 	HEADERS += screens/math_lib/rand.h
 	HEADERS += screens/math_lib/matrix.h
 	HEADERS += screens/math_lib/m_math.h
+	HEADERS += screens/3d_soft_screen/s_texture_manager.h
 
 	SOURCES += screens/3d_soft_screen/s_chunk_info.cpp
 	SOURCES += screens/3d_soft_screen/s_world_renderer.cpp
@@ -92,6 +93,7 @@ cursed_screen {
 	SOURCES += screens/math_lib/matrix.cpp
 	SOURCES += screens/math_lib/rand.cpp
 	SOURCES += screens/math_lib/m_math.cpp
+	SOURCES += screens/3d_soft_screen/s_texture_manager.cpp
 } else {
     error("define screen type in CONFIG!")
 }

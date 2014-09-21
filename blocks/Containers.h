@@ -60,7 +60,7 @@ class Box : public Falling, public Inventory {
      *
      *  Unlike chests, position of box is not static, it can be moved and falls
      *  when it can.
-     *  Also, pile is box of substance DIFFERENT, it will dissapear if empty; */
+     *  Also, pile is box of substance DIFFERENT, it will dissapear if empty.*/
     Q_OBJECT
 public:
     Box(int kind, int sub);

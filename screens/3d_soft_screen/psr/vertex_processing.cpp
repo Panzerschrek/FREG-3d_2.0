@@ -99,12 +99,6 @@ int DrawTriangleToBuffer( char* buff )//returns 0, if no output triangles
     int vertex_indeces_from_upper[3]= { 0, 1, 2 };
     int vertex_y_from_upper[3]= { triangle_in_vertex_xy[1], triangle_in_vertex_xy[3], triangle_in_vertex_xy[5] };
 
-    fixed16_t triangle_in_vertex_inv_z[]=
-    {
-        Fixed16Invert(triangle_in_vertex_z[0] ),
-        Fixed16Invert(triangle_in_vertex_z[1] ),
-        Fixed16Invert(triangle_in_vertex_z[2] )
-    };
 
     //sort vertices from upper to lower, using bubble-sorting
 	register int tmp;
@@ -136,6 +130,11 @@ int DrawTriangleToBuffer( char* buff )//returns 0, if no output triangles
         vertex_indeces_from_upper[1]= tmp;
     }
     //end of sorting
+
+    fixed16_t triangle_in_vertex_inv_z[2];//invert z of upper vertex and lower vertex
+    triangle_in_vertex_inv_z[0]= Fixed16Invert(triangle_in_vertex_z[vertex_indeces_from_upper[0]] );
+    triangle_in_vertex_inv_z[1]= Fixed16Invert(triangle_in_vertex_z[vertex_indeces_from_upper[2]] );
+
 
 
 	fixed16_t div= triangle_in_vertex_xy[ vertex_indeces_from_upper[0]*2 + 1 ] - triangle_in_vertex_xy[ vertex_indeces_from_upper[2]*2 + 1 ];
@@ -185,15 +184,15 @@ int DrawTriangleToBuffer( char* buff )//returns 0, if no output triangles
     ((int*)v)[0]= up_down_line_x;
     ((int*)v)[1]= triangle_in_vertex_xy[ (vertex_indeces_from_upper[1]<<1)+1 ];//y - from middle vertex
     ((int*)v)[2]= Fixed16Invert
-                  ( Fixed16Mul( triangle_in_vertex_inv_z[ vertex_indeces_from_upper[0] ], k1 ) +
-                    Fixed16Mul( triangle_in_vertex_inv_z[ vertex_indeces_from_upper[2] ], k0 ) );//interpolate inv_z
+                  ( Fixed16Mul( triangle_in_vertex_inv_z[ 0 ], k1 ) +
+                    Fixed16Mul( triangle_in_vertex_inv_z[ 1 ], k0 ) );//interpolate inv_z
 
     final_z= ((int*)v)[2];
     v+= 3 * sizeof(int);
     if( color_mode == COLOR_PER_VERTEX || lighting_mode == LIGHTING_PER_VERTEX_COLORED )
     {
-		fixed16_t inv_z0= triangle_in_vertex_inv_z[ vertex_indeces_from_upper[0] ];
-        fixed16_t inv_z2= triangle_in_vertex_inv_z[ vertex_indeces_from_upper[2] ];
+        fixed16_t inv_z0= triangle_in_vertex_inv_z[ 0 ];
+        fixed16_t inv_z2= triangle_in_vertex_inv_z[ 1 ];
         for( int i= 0; i< 4; i++ )
         {
             //convert in color to fixed16_t format and divede by z
@@ -206,8 +205,8 @@ int DrawTriangleToBuffer( char* buff )//returns 0, if no output triangles
     if( texture_mode != TEXTURE_NONE )
     {
 
-        fixed16_t inv_z0= triangle_in_vertex_inv_z[ vertex_indeces_from_upper[0] ];
-        fixed16_t inv_z2= triangle_in_vertex_inv_z[ vertex_indeces_from_upper[2] ];
+        fixed16_t inv_z0= triangle_in_vertex_inv_z[ 0 ];
+        fixed16_t inv_z2= triangle_in_vertex_inv_z[ 1 ];
         fixed16_t div_tc0= Fixed16Mul( triangle_in_tex_coord[ (vertex_indeces_from_upper[0]<<1) ], inv_z0 );
         fixed16_t div_tc2= Fixed16Mul( triangle_in_tex_coord[ (vertex_indeces_from_upper[2]<<1) ], inv_z2 );
         ((int*)v)[0]= Fixed16Mul( Fixed16Mul( div_tc0, k1 ) + Fixed16Mul( div_tc2, k0 ), final_z );
@@ -218,15 +217,15 @@ int DrawTriangleToBuffer( char* buff )//returns 0, if no output triangles
     }
     if( lighting_mode == LIGHTING_PER_VERTEX )
     {
-        fixed16_t div_l0= triangle_in_light[ vertex_indeces_from_upper[0] ] * triangle_in_vertex_inv_z[ vertex_indeces_from_upper[0] ];
-        fixed16_t div_l2= triangle_in_light[ vertex_indeces_from_upper[2] ] * triangle_in_vertex_inv_z[ vertex_indeces_from_upper[2] ];
+        fixed16_t div_l0= triangle_in_light[ vertex_indeces_from_upper[0] ] * triangle_in_vertex_inv_z[ 0 ];
+        fixed16_t div_l2= triangle_in_light[ vertex_indeces_from_upper[2] ] * triangle_in_vertex_inv_z[ 1 ];
         ((int*)v)[0]= Fixed16MulResultToInt( Fixed16Mul( div_l0, k1 ) + Fixed16Mul( div_l2, k0 ), final_z );
         v+=sizeof(int);
     }
     if( lighting_mode == LIGHTING_FROM_LIGHTMAP )
     {
-        fixed16_t inv_z0= triangle_in_vertex_inv_z[ vertex_indeces_from_upper[0] ];
-        fixed16_t inv_z2= triangle_in_vertex_inv_z[ vertex_indeces_from_upper[2] ];
+        fixed16_t inv_z0= triangle_in_vertex_inv_z[ 0 ];
+        fixed16_t inv_z2= triangle_in_vertex_inv_z[ 1 ];
         fixed16_t div_tc0= Fixed16Mul( triangle_in_lightmap_tex_coord[ (vertex_indeces_from_upper[0]<<1) ], inv_z0 );
         fixed16_t div_tc2= Fixed16Mul( triangle_in_lightmap_tex_coord[ (vertex_indeces_from_upper[2]<<1) ], inv_z2 );
         ((int*)v)[0]= Fixed16Mul( Fixed16Mul( div_tc0, k1 ) + Fixed16Mul( div_tc2, k0 ), final_z );

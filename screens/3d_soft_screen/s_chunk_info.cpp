@@ -2,6 +2,8 @@
 #include "../../Shred.h"
 #include "../../blocks/Block.h"
 
+#include "s_texture_manager.h"
+
 #define CHUNK_WIDTH_LOG2 4
 #define CHUNK_HEIGHT_LOG2 7
 
@@ -121,9 +123,11 @@ void s_ChunkInfo::GenChunk()
     //something unfinished:
     //TODO: set up textures, generate chunk borders
 
-    const fixed16_t tex_size= 65536 * 32;
+    const fixed16_t tex_size= 65536;
 
     int x, y, z;
+    int tex_coord_sign[2];
+
     s_WorldQuad* quad= quad_buffer[1].quads;
     Block* b;
 
@@ -148,12 +152,14 @@ void s_ChunkInfo::GenChunk()
                         quad->normal= NORMAL_Z_POS;
                         quad->light= shred->Lightmap( x, y, z )&15;
                         b= shred->GetBlock( x, y, z+1 );
+                        tex_coord_sign[1]= -1;
                     }
                     else
                     {
                         quad->normal= NORMAL_Z_NEG;
                         quad->light= shred->Lightmap( x, y, z+1 )&15;
                         b= shred->GetBlock( x, y, z );
+                        tex_coord_sign[1]= 1;
                     }
                     quad->coord[2]= quad->coord[5]= quad->coord[8]= quad->coord[11]= float(z+1);
                     //vertex 0 - (x,y)
@@ -166,10 +172,10 @@ void s_ChunkInfo::GenChunk()
                     quad->coord[7]= quad->coord[4]= float(Y+y+1);
 
                     quad->tc[0]= quad->tc[2]= 0;
-                    quad->tc[4]= quad->tc[6]= tex_size;
+                    quad->tc[4]= quad->tc[6]= -tex_size;
                     quad->tc[1]= quad->tc[7]= 0;
-                    quad->tc[3]= quad->tc[5]= tex_size;
-                    if( b->Kind() == LIQUID ) quad->tex_id= 1; else quad->tex_id = 0;
+                    quad->tc[3]= quad->tc[5]= tex_size * tex_coord_sign[1];
+                    quad->tex_id= s_TextureManager::GetTextureId( b->Kind(), b->Sub() );
 
                     quad++;
                 }//if is up face
@@ -179,13 +185,15 @@ void s_ChunkInfo::GenChunk()
                     {
                         quad->normal= NORMAL_X_POS;
                         quad->light= shred->Lightmap( x, y, z )&15;
-                         b= shred->GetBlock( x+1, y, z );
+                        b= shred->GetBlock( x+1, y, z );
+                        tex_coord_sign[0]= 1;
                     }
                     else
                     {
                         quad->normal= NORMAL_X_NEG;
                         quad->light= shred->Lightmap( x+1, y, z )&15;
                         b= shred->GetBlock( x, y, z );
+                        tex_coord_sign[0]= -1;
                     }
                     quad->coord[0]= quad->coord[3]= quad->coord[6]= quad->coord[9]= float(X+x+1);
 
@@ -195,10 +203,10 @@ void s_ChunkInfo::GenChunk()
                     quad->coord[8]= quad->coord[5]= float(z+1);
 
                     quad->tc[0]= quad->tc[2]= 0;
-                    quad->tc[4]= quad->tc[6]= tex_size;
+                    quad->tc[4]= quad->tc[6]= tex_size * tex_coord_sign[0];
                     quad->tc[1]= quad->tc[7]= 0;
                     quad->tc[3]= quad->tc[5]= tex_size;
-                    if( b->Kind() == LIQUID ) quad->tex_id= 1; else quad->tex_id = 0;
+                    quad->tex_id= s_TextureManager::GetTextureId( b->Kind(), b->Sub() );
 
                     quad++;
                 }//if is x+ face
@@ -208,13 +216,15 @@ void s_ChunkInfo::GenChunk()
                     {
                         quad->normal= NORMAL_Y_POS;
                         quad->light= shred->Lightmap( x, y, z )&15;
-                         b= shred->GetBlock( x, y+1, z );
+                        b= shred->GetBlock( x, y+1, z );
+                        tex_coord_sign[0]= -1;
                     }
                     else
                     {
                         quad->normal= NORMAL_Y_NEG;
                         quad->light= shred->Lightmap( x, y+1, z )&15;
-                         b= shred->GetBlock( x, y, z );
+                        b= shred->GetBlock( x, y, z );
+                        tex_coord_sign[0]= 1;
                     }
                     quad->coord[1]= quad->coord[4]= quad->coord[7]= quad->coord[10]= float(Y+y+1);
                     quad->coord[11]= quad->coord[2]= float(z);
@@ -223,10 +233,10 @@ void s_ChunkInfo::GenChunk()
                     quad->coord[9]= quad->coord[6]= float(X+x+1);
 
                     quad->tc[0]= quad->tc[2]= 0;
-                    quad->tc[4]= quad->tc[6]= tex_size;
+                    quad->tc[4]= quad->tc[6]= tex_size * tex_coord_sign[0];
                     quad->tc[1]= quad->tc[7]= 0;
                     quad->tc[3]= quad->tc[5]= tex_size;
-                    if( b->Kind() == LIQUID ) quad->tex_id= 1; else quad->tex_id = 0;
+                    quad->tex_id= s_TextureManager::GetTextureId( b->Kind(), b->Sub() );
 
                     quad++;
                 }//if is y+ chunk

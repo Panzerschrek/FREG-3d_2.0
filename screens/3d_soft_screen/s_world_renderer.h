@@ -6,6 +6,8 @@
 #include "../math_lib/matrix.h"
 class World;
 
+class s_TextureManager;
+
 class s_WorldRenderer
 {
 public:
@@ -34,6 +36,8 @@ private:
     int screen_size_x, screen_size_y;
 
     World* world;
+
+    s_TextureManager* texture_manager;
 
     //matrix of pointers to ChunkInfo. Each chunk allocates separatly
     //matrix will be shifted, when world will be shifted, new chunkInfo will be allocated and old deleted

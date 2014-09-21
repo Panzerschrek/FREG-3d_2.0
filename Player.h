@@ -58,8 +58,8 @@ public:
     long GlobalX() const;
     long GlobalY() const;
 
-    using Xyz::X;
-    using Xyz::Y;
+    int X() const;
+    int Y() const;
     using Xyz::Z;
 
     /// This returns current player direction (see enum dirs in header.h)

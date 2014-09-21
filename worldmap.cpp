@@ -33,7 +33,7 @@ WorldMap::WorldMap(const QString world_name) :
     if ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) {
         mapSize = int(qSqrt(1+4*map.size())-1)/2;
     } else {
-        GenerateMap(home_path + world_name, DEFAULT_MAP_SIZE, SHRED_WATER, 0);
+        GenerateMap(world_name, DEFAULT_MAP_SIZE, SHRED_WATER, 0);
         mapSize = ( map.open(QIODevice::ReadOnly | QIODevice::Text) ) ?
             DEFAULT_MAP_SIZE : 1;
     }

@@ -49,8 +49,8 @@ public:
     Active(int sub, int id, int transp = UNDEF);
     Active(QDataStream & str, int sub, int id, int transp = UNDEF);
 
-    using Xyz::X;
-    using Xyz::Y;
+    int X() const;
+    int Y() const;
     using Xyz::Z;
     using Xyz::SetXyz;
 
@@ -68,11 +68,6 @@ public:
 
     virtual inner_actions ActInner();
     virtual int ShouldAct() const;
-
-    void ReloadToNorth();
-    void ReloadToSouth();
-    void ReloadToWest();
-    void ReloadToEast();
 
     void SetShred(Shred *);
     void Farewell();
@@ -98,7 +93,7 @@ protected:
 private:
     Active(Active &) = delete;
     Active & operator=(Active &) = delete;
-    void UpdateShred();
+    void ReRegister(dirs);
 
     Shred * shred = nullptr;
 }; // Active

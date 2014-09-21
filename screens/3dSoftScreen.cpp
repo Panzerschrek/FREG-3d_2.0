@@ -154,7 +154,7 @@ void Screen::CalculateFPS()
     frame_time_delta= float( prev_frame_time.msecsTo( this_frame_time ) ) * 0.001f;
     prev_frame_time= this_frame_time;
 
-    int fps_calc_freq= 2;
+    int fps_calc_freq= 1;
 
     if( prev_fps_time.msecsTo( this_frame_time ) > fps_calc_freq * 1000 )
     {

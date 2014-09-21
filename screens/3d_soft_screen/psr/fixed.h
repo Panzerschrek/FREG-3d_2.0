@@ -120,7 +120,7 @@ inline fixed16_t Fixed16Invert( fixed16_t b )
     "movl $1, %%edx\n\t"
     "xorl %%eax, %%eax\n\t"
     "idivl %1\n\t"
-    :"=a"(result)
+    :"=&a"(result)
             :"bcSDm"(b)
             :"%edx");
     return result;
@@ -151,7 +151,7 @@ inline fixed16_t Fixed16DepthInvert( fixed16_t b )
     "divl %2\n\t"
     :"=a"(result)
             :"d"(PSR_INV_DEPTH_DELTA_MULTIPLER)/*move me PSR_INV_DEPTH_DELTA_MULTIPLER into edx, please*/, "bcSDm"(b)
-            :"%edx");
+            :);
     return result;
     #else
     long long unsigned int y(PSR_INV_DEPTH_DELTA_MULTIPLER*4294967296LL);

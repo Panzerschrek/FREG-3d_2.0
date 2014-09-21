@@ -76,8 +76,8 @@ void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
 
 World * VirtScreen::GetWorld() const { return w; }
 
-char VirtScreen::CharName(const int kind, const int sub) const {
-    switch ( kind )  {
+char VirtScreen::CharName(const int kind, const int sub) {
+    switch ( static_cast<kinds>(kind) )  {
     case BUSH:   return ';';
     case DWARF:  return '@';
     case LIQUID: return '~';
@@ -92,6 +92,7 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case AXE:    return '/';
     case BELL:   return 'b';
     case BUCKET: return 'u';
+    case MAP:
     case KIND_TEXT: return '?';
     case PREDATOR:  return '!';
     case WORKBENCH: return '*';
@@ -112,12 +113,13 @@ char VirtScreen::CharName(const int kind, const int sub) const {
     case MEDKIT:    return '+';
     case FILTER:    return 'F';
     case INFORMER:  return 'I';
+    case RAIN_MACHINE: return 'R';
     case FALLING: switch ( sub ) {
         case SAND:  return '.';
         case WATER: return '*';
         case STONE: return ':';
     } // no break;
-    default: switch ( sub ) {
+    case BLOCK: switch ( sub ) {
         default:    return '#';
         case SOIL:  return '.';
         case WATER: return '~';
@@ -131,6 +133,8 @@ char VirtScreen::CharName(const int kind, const int sub) const {
         case STAR:  return '.';
         case SKY:
         case AIR:   return ' ';
-        }
+        } break;
+    case LAST_KIND: break;
     }
+    Q_UNREACHABLE();
 } // char VirtScreen::CharName(int kind, int sub)

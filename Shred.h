@@ -110,6 +110,11 @@ public:
        return x >> SHRED_WIDTH_SHIFT;
     }
 
+    /// Lowest nullstone and sky are not in bounds.
+    static bool InBounds(int x, int y, int z);
+    static bool InBounds(int x, int y);
+    static bool InBounds(int z);
+
     void Rain(int kind, int sub);
     void Dew (int kind, int sub);
 
@@ -159,11 +164,6 @@ private:
                     int x_size,  int y_size,  int z_size, subs);
 
     void RainBlock(int * kind, int * sub) const;
-
-    /// Lowest nullstone and sky are not in bounds.
-    static bool InBounds(int x, int y, int z);
-
-    static const int SHRED_WIDTH_SHIFT = 4;
 
     Block * blocks[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];
     uchar lightMap[SHRED_WIDTH][SHRED_WIDTH][HEIGHT];

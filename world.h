@@ -63,6 +63,7 @@ public: // Block work section
     Block * GetBlock(int x, int y, int z) const;
     Shred * GetShred(int i, int j) const;
     Shred * GetShredByPos(int x, int y) const;
+    Shred * GetNearShred(Shred *, dirs dir) const;
 
 public: // Lighting section
     int Enlightened(int x, int y, int z) const;
@@ -104,6 +105,7 @@ public: // Information section
     bool Focus(int x, int y, int z,
             int * x_targ, int * y_targ, int * z_targ, dirs dir) const;
     int NumShreds() const;
+    bool ShredInCentralZone(long longi, long  lati) const;
     static dirs TurnRight(dirs dir);
     static dirs TurnLeft (dirs dir);
     static dirs Anti(dirs dir);
@@ -245,8 +247,6 @@ private:
     int sunMoonFactor;
 
     ShredStorage * shredStorage;
-    /// For reusing memory on full shreds reload.
-    Shred * shredMemoryPool;
     bool initial_lighting;
     QList<QString> notes;
 };

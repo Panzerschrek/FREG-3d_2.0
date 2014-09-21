@@ -63,9 +63,15 @@ const static QString sub_names[] = {
     QObject::tr("acid"),
     QObject::tr("cloud"),
     QObject::tr("dust"),
+    QObject::tr("plastic"),
 };
 
-QString Block::SubName(const int sub) { return sub_names[sub]; }
+QString Block::SubName(const int sub) {
+    static_assert(sizeof_array(sub_names) == LAST_SUB,
+        "invalid number of strings in sub_names");
+    return sub_names[sub];
+}
+
 QString Block::DirString(const dirs dir) { return dir_strings[dir]; }
 
 QString Block::SubNameUpper(const int sub) {
@@ -273,8 +279,19 @@ sub_groups Block::GetSubGroup(const int sub) {
     case AIR:
     case SKY:
     case STAR:   return GROUP_AIR;
+
     case H_MEAT:
     case A_MEAT: return GROUP_MEAT;
+
+    case STONE:
+    case DIAMOND:
+    case WOOD:
+    case BONE:   return GROUP_HANDY;
+
+    case IRON:
+    case GOLD:
+    case ADAMANTINE:
+    case STEEL:  return GROUP_METAL;
     }
 }
 

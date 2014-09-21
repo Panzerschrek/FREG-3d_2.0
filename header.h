@@ -36,6 +36,7 @@ const bool DEBUG = true;
 extern const QString home_path;
 
 const int SHRED_WIDTH = 16;
+const int SHRED_WIDTH_SHIFT = 4;
 const int HEIGHT = 128;
 
 enum times {
@@ -187,6 +188,7 @@ enum subs {
     ACID,       ///<  28
     SUB_CLOUD,  ///<  29
     SUB_DUST,   ///<  30
+    SUB_PLASTIC,///<  31
     /// Nothing is made from LAST_SUB.
     LAST_SUB // keep it last in this list
 }; // enum subs
@@ -217,5 +219,7 @@ inline int Abs(const int x) {
     const int mask = x >> (sizeof(int)*8 - 1);
     return (x ^ mask) - mask;
 }
+
+#define sizeof_array(ARRAY) (sizeof(ARRAY)/sizeof(ARRAY[0]))
 
 #endif // HEADER_H

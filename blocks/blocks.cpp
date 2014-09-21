@@ -113,8 +113,10 @@
 
     QString Liquid::FullName() const {
         switch ( Sub() ) {
-        case STONE: return tr("Lava");
-        default:    return SubNameUpper(Sub());
+        case STONE:  return tr("Lava");
+        case H_MEAT:
+        case A_MEAT: return tr("Blood");
+        default:     return SubNameUpper(Sub());
         }
     }
 

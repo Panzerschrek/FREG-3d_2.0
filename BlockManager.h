@@ -70,11 +70,13 @@ public:
     static int StringToSub(QString);
 
     constexpr static int MakeId(const int kind, const int sub) {
-        return (kind << 8) | sub;
+        return (kind << 6) | sub;
     }
 
     static int KindFromId(int id);
     static int SubFromId(int id);
+
+    static bool IsValid(int kind, int sub);
 
 private:
     BlockManager(const BlockManager &) = delete;

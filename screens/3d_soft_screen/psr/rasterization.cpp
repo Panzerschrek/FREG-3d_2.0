@@ -1274,7 +1274,6 @@ void ScanLines()
 				final_z= ( scanline_z[i] * d1 + scanline_z[i+1] * d )>> PSR_LINE_SEGMENT_SIZE_LOG2;
 			}
 #endif
-
 #ifdef PSR_SSE_Z_CALCULATION
             {
                 int tetrapix_num= x&3;
@@ -1767,14 +1766,11 @@ void DrawTriangleUp()
 	if( dy < 16384 )
 		dy= 16384<<16;
 
-    fixed16_t inv_vertex_z[3];
-    for( int i= 0; i< 3; i++ )
-	{
+    fixed16_t inv_vertex_z[2];
+    // 1/z2 - do not need it
+    inv_vertex_z[0]= Fixed16Invert( triangle_in_vertex_z[0] );
+    inv_vertex_z[1]= Fixed16Invert( triangle_in_vertex_z[1] );
 
-        inv_vertex_z[i]= Fixed16Invert( triangle_in_vertex_z[i] );
-		//HACK
-		//inv_vertex_z[i]= Fixed16Invert( FastIntMax( triangle_in_vertex_z[i], PSR_MIN_ZMIN ) );
-	}
     if( color_mode == COLOR_PER_VERTEX )
     {
         for( int i= 0; i< 4; i++ )
@@ -1932,13 +1928,10 @@ void DrawTriangleDown()
 	if( dy < 16384 )
 		dy= 16384<<16;
 
-    fixed16_t inv_vertex_z[3];
-   for( int i= 0; i< 3; i++ )
-	{
-        inv_vertex_z[i]= Fixed16Invert( triangle_in_vertex_z[i] );
-		//HACK
-		//inv_vertex_z[i]= Fixed16Invert( FastIntMax( triangle_in_vertex_z[i], PSR_MIN_ZMIN ) );
-	}
+    fixed16_t inv_vertex_z[2];
+    // 1/z2 - do not need it
+    inv_vertex_z[0]= Fixed16Invert( triangle_in_vertex_z[0] );
+    inv_vertex_z[1]= Fixed16Invert( triangle_in_vertex_z[1] );
     if( color_mode == COLOR_PER_VERTEX )
     {
         for( int i= 0; i< 4; i++ )

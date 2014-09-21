@@ -77,6 +77,8 @@ enum sub_groups {
     GROUP_NONE,
     GROUP_AIR,
     GROUP_MEAT,
+    GROUP_METAL,
+    GROUP_HANDY,
 };
 
 class Inventory;

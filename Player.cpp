@@ -36,9 +36,17 @@ const bool COMMANDS_ALWAYS_ON = true;
 //const subs PLAYER_SUB = ADAMANTINE;
 const subs PLAYER_SUB = H_MEAT;
 
+int Player::X() const {
+    return GetShred()->ShredX() << SHRED_WIDTH_SHIFT | Xyz::X();
+}
+
+int Player::Y() const {
+    return GetShred()->ShredY() << SHRED_WIDTH_SHIFT | Xyz::Y();
+}
+
 long Player::GlobalX() const { return GetShred()->GlobalX(X()); }
 long Player::GlobalY() const { return GetShred()->GlobalY(Y()); }
-Shred * Player::GetShred() const { return world->GetShred(X(), Y()); }
+Shred * Player::GetShred() const { return player->GetShred(); }
 World * Player::GetWorld() const { return world; }
 
 dirs Player::GetDir() const { return player->GetDir(); }
@@ -93,10 +101,6 @@ void Player::Examine() {
     emit GetFocus(&i, &j, &k);
     const Block * const block = world->GetBlock(i, j, k);
     emit Notify( tr("You see %1.").arg(block->FullName()) );
-    locker.unlock();
-    ProcessCommand(QString("help %1").
-        arg(BlockManager::KindToString(block->Kind())));
-    locker.relock();
     if ( DEBUG ) {
         emit Notify(QString("Weight: %1. Id: %2.").
             arg(block->Weight()).
@@ -400,13 +404,11 @@ bool Player::Damage() const {
 }
 
 void Player::CheckOverstep(const int direction) {
-    UpdateXYZ();
-    const int half_num_shreds = GetWorld()->NumShreds()/2;
-    if ( direction > DOWN && ( // leaving central zone
-            X() <  (half_num_shreds-1)*SHRED_WIDTH ||
-            Y() <  (half_num_shreds-1)*SHRED_WIDTH ||
-            X() >= (half_num_shreds+2)*SHRED_WIDTH ||
-            Y() >= (half_num_shreds+2)*SHRED_WIDTH ) )
+    SetXyz(Shred::CoordInShred(player->X()), Shred::CoordInShred(player->Y()),
+        player->Z());
+    if ( direction > DOWN
+            && not GetWorld()->ShredInCentralZone(
+                GetShred()->Longitude(), GetShred()->Latitude()) )
     {
         emit OverstepBorder(direction);
     }
@@ -418,7 +420,7 @@ void Player::BlockDestroy() {
         usingType = usingSelfType = USAGE_TYPE_NO;
         emit Notify(tr("^ You die. ^"));
         emit Destroyed();
-        player = NewPlayer();
+        player = nullptr;
         world->ReloadAllShreds(homeLati, homeLongi, homeX,homeY,homeZ);
     }
 }
@@ -429,24 +431,27 @@ Animal * Player::NewPlayer() const {
 }
 
 void Player::SetPlayer(const int _x, const int _y, const int _z) {
-    SetXyz(_x, _y, _z);
+    SetXyz(Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
+
     if ( player != nullptr ) {
         player->disconnect();
     }
     if ( GetCreativeMode() ) {
-        (player = creator)->SetXyz(X(), Y(), Z());
-        GetShred()->Register(player);
+        (player = creator)->SetXyz(
+            Shred::CoordInShred(_x), Shred::CoordInShred(_y), _z);
+        GetWorld()->GetShred(_x, _y)->Register(player);
     } else {
         if ( player != nullptr ) {
             GetShred()->Unregister(player);
         }
         World * const world = GetWorld();
-        Block * candidate = world->GetBlock(X(), Y(), z_self);
+        Q_ASSERT(z_self <= HEIGHT-2);
+        Block * candidate = world->GetBlock(_x, _y, z_self);
         for ( ; z_self < HEIGHT-2; ++z_self ) {
+            candidate = world->GetBlock(_x, _y, z_self);
             if ( AIR == candidate->Sub() || candidate->IsAnimal() ) {
                 break;
             }
-            candidate = world->GetBlock(X(), Y(), z_self);
         }
         if ( candidate->IsAnimal() ) {
             player = candidate->IsAnimal();
@@ -454,7 +459,7 @@ void Player::SetPlayer(const int _x, const int _y, const int _z) {
             if ( player == nullptr || player == creator ) {
                 player = NewPlayer();
             }
-            world->Build(player, X(), Y(), Z(), GetDir(), nullptr, true);
+            world->Build(player, _x, _y, Z(), GetDir(), nullptr, true);
         }
     }
     connect(player, SIGNAL(destroyed()), SLOT(BlockDestroy()),
@@ -500,12 +505,9 @@ Player::Player() :
     connect(this, SIGNAL(OverstepBorder(int)),
         world, SLOT(SetReloadShreds(int)),
         Qt::DirectConnection);
-    connect(world, SIGNAL(Moved(int)), SLOT(UpdateXYZ()),
-        Qt::DirectConnection);
 }
 
 Player::~Player() {
-    delete creator;
     settings.setValue("home_longitude", qlonglong(homeLongi));
     settings.setValue("home_latitude", qlonglong(homeLati));
     const int min = world->NumShreds()/2*SHRED_WIDTH;
@@ -518,4 +520,5 @@ Player::~Player() {
     settings.setValue("creative_mode", GetCreativeMode());
     settings.setValue("using_type", usingType);
     settings.setValue("using_self_type", usingSelfType);
+    delete creator;
 }

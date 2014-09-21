@@ -78,19 +78,20 @@ void Active::Move(const dirs dir) {
     switch ( dir ) {
     case UP:    ++z_self; break;
     case DOWN:  --z_self; break;
-    case NORTH: --y_self; break;
-    case SOUTH: ++y_self; break;
-    case EAST:  ++x_self; break;
-    case WEST:  --x_self; break;
+    case NORTH: --y_self; ReRegister(NORTH); break;
+    case SOUTH: ++y_self; ReRegister(SOUTH); break;
+    case EAST:  ++x_self; ReRegister(EAST ); break;
+    case WEST:  --x_self; ReRegister(WEST ); break;
     }
     emit Moved(dir);
-    if ( dir > DOWN ) {
-        Shred * const new_shred = GetWorld()->GetShred(X(), Y());
-        if ( shred != new_shred ) {
-            shred->Unregister(this);
-            new_shred->Register(this);
-        }
-    }
+}
+
+void Active::ReRegister(const dirs dir) {
+    if ( Shred::InBounds(x_self, y_self) ) return;
+    x_self &= 0xF;
+    y_self &= 0xF;
+    shred->Unregister(this);
+    (shred = GetWorld()->GetNearShred(shred, dir))->Register(this);
 }
 
 void Active::SendSignalAround(const QString signal) const {
@@ -145,10 +146,13 @@ void Active::Damage(const int dmg, const int dmg_kind) {
 
 void Active::ReceiveSignal(const QString str) { emit ReceivedText(str); }
 
-void Active::ReloadToNorth() { y_self += SHRED_WIDTH; }
-void Active::ReloadToSouth() { y_self -= SHRED_WIDTH; }
-void Active::ReloadToWest()  { x_self += SHRED_WIDTH; }
-void Active::ReloadToEast()  { x_self -= SHRED_WIDTH; }
+int Active::X() const {
+    return GetShred()->ShredX() << SHRED_WIDTH_SHIFT | Xyz::X();
+}
+
+int Active::Y() const {
+    return GetShred()->ShredY() << SHRED_WIDTH_SHIFT | Xyz::Y();
+}
 
 Active::Active(const int kind, const int sub, const int transp) :
         Block(kind, sub, transp),
