@@ -290,7 +290,7 @@ bool BlockManager::IsValid(const int kind, const int sub) {
     case BUSH:      return ( sub == GREENERY || sub == WOOD );
     case FALLING:   return ( sub == WATER || sub == STONE );
     case LIQUID:    return ( group == GROUP_MEAT || group == GROUP_METAL
-                            || sub == STONE );
+                            || sub == STONE || sub == WATER);
 
     case BUCKET:
     case CLOCK:

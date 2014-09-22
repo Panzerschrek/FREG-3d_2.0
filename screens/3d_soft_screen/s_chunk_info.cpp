@@ -70,15 +70,33 @@ void s_ChunkInfo::GetQuadCount()
     min_geometry_height= HEIGHT;
     max_geometry_height= 0;
 
-    for( x= 0; x< SHRED_WIDTH  - 1 ; x++ )
+    for( x= 0; x< SHRED_WIDTH ; x++ )
     {
-        for( y= 0; y< SHRED_WIDTH  - 1; y++ )
+        for( y= 0; y< SHRED_WIDTH; y++ )
         {
             unsigned char* t_up= transparency + BLOCK_LINEAR_ADDR(x,y,0+1);
-            unsigned char* t_x=  transparency + BLOCK_LINEAR_ADDR(x+1,y,0);
-            unsigned char* t_y=  transparency + BLOCK_LINEAR_ADDR(x,y+1,0);
-
+            unsigned char* t_x;
+            unsigned char* t_y;
             unsigned char block_t= *(transparency + BLOCK_LINEAR_ADDR(x,y,0) );
+
+            if( x == SHRED_WIDTH-1 )
+            {
+                if( neighbors[0] != nullptr )
+                    t_x= neighbors[0]->transparency + BLOCK_LINEAR_ADDR(0,y,0);
+                else
+                    t_x= t_up-1;
+            }
+            else
+                t_x= transparency + BLOCK_LINEAR_ADDR(x+1,y,0);
+            if( y == SHRED_WIDTH-1 )
+            {
+                if( neighbors[2] != nullptr )
+                    t_y= neighbors[2]->transparency + BLOCK_LINEAR_ADDR(x,0,0);
+                else
+                    t_y= t_up-1;
+            }
+            else
+                t_y= transparency + BLOCK_LINEAR_ADDR(x,y+1,0);
             for( z= 0; z< HEIGHT  - 2; z++ )
             {
                 if( block_t != *t_up )
@@ -113,16 +131,11 @@ void s_ChunkInfo::GetQuadCount()
             }//for z
         }//for y
     }//for x
-
-    //TODO add calcualting quad count on chunk borders
 }
 
 
 void s_ChunkInfo::GenChunk()
 {
-    //something unfinished:
-    //TODO: set up textures, generate chunk borders
-
     const fixed16_t tex_size= 65536;
 
     int x, y, z;
@@ -134,15 +147,49 @@ void s_ChunkInfo::GenChunk()
     int X= shred->Latitude() * SHRED_WIDTH, Y= shred->Longitude()  * SHRED_WIDTH;
     //int X= 0, Y= 0;
 
-    for( x= 0; x< SHRED_WIDTH  - 1 ; x++ )
+    int x_block_x, y_block_y;
+    for( x= 0; x< SHRED_WIDTH; x++ )
     {
-        for( y= 0; y< SHRED_WIDTH  - 1; y++ )
+        x_block_x= (x+1) & (SHRED_WIDTH-1);
+        for( y= 0; y< SHRED_WIDTH; y++ )
         {
             unsigned char* t_up= transparency + BLOCK_LINEAR_ADDR(x,y,min_geometry_height+1);
-            unsigned char* t_x=  transparency + BLOCK_LINEAR_ADDR(x+1,y,min_geometry_height);
-            unsigned char* t_y=  transparency + BLOCK_LINEAR_ADDR(x,y+1,min_geometry_height);
-
+            unsigned char* t_x;
+            unsigned char* t_y;
             unsigned char block_t= *(transparency + BLOCK_LINEAR_ADDR(x,y,min_geometry_height) );
+            Shred *x_block_shred, *y_block_shred;
+
+            y_block_y= (y+1) & (SHRED_WIDTH-1);
+            if( x == SHRED_WIDTH-1 )
+            {
+                if( neighbors[0] != nullptr )
+                {
+                    t_x= neighbors[0]->transparency + BLOCK_LINEAR_ADDR(0,y,min_geometry_height);
+                    x_block_shred= neighbors[0]->shred;
+                }
+                else
+                    t_x= t_up-1;
+            }
+            else
+            {
+                t_x=  transparency + BLOCK_LINEAR_ADDR(x+1,y,min_geometry_height);
+                x_block_shred= shred;
+            }
+            if( y == SHRED_WIDTH-1 )
+            {
+                if( neighbors[2] != nullptr )
+                {
+                    t_y= neighbors[2]->transparency + BLOCK_LINEAR_ADDR(x,0,min_geometry_height);
+                    y_block_shred= neighbors[2]->shred;
+                }
+                else
+                    t_y= t_up-1;
+            }
+            else
+            {
+                t_y=  transparency + BLOCK_LINEAR_ADDR(x,y+1,min_geometry_height);
+                y_block_shred= shred;
+            }
             for( z= min_geometry_height; z<= max_geometry_height; z++ )
             {
                 if( block_t != *t_up )
@@ -152,14 +199,14 @@ void s_ChunkInfo::GenChunk()
                         quad->normal= NORMAL_Z_POS;
                         quad->light= shred->Lightmap( x, y, z )&15;
                         b= shred->GetBlock( x, y, z+1 );
-                        tex_coord_sign[1]= -1;
+                        tex_coord_sign[1]= tex_size;
                     }
                     else
                     {
                         quad->normal= NORMAL_Z_NEG;
                         quad->light= shred->Lightmap( x, y, z+1 )&15;
                         b= shred->GetBlock( x, y, z );
-                        tex_coord_sign[1]= 1;
+                        tex_coord_sign[1]= -tex_size;
                     }
                     quad->coord[2]= quad->coord[5]= quad->coord[8]= quad->coord[11]= float(z+1);
                     //vertex 0 - (x,y)
@@ -172,9 +219,9 @@ void s_ChunkInfo::GenChunk()
                     quad->coord[7]= quad->coord[4]= float(Y+y+1);
 
                     quad->tc[0]= quad->tc[2]= 0;
-                    quad->tc[4]= quad->tc[6]= -tex_size;
+                    quad->tc[4]= quad->tc[6]= tex_size;
                     quad->tc[1]= quad->tc[7]= 0;
-                    quad->tc[3]= quad->tc[5]= tex_size * tex_coord_sign[1];
+                    quad->tc[3]= quad->tc[5]= tex_coord_sign[1];
                     quad->tex_id= s_TextureManager::GetTextureId( b->Kind(), b->Sub() );
 
                     quad++;
@@ -185,15 +232,15 @@ void s_ChunkInfo::GenChunk()
                     {
                         quad->normal= NORMAL_X_POS;
                         quad->light= shred->Lightmap( x, y, z )&15;
-                        b= shred->GetBlock( x+1, y, z );
-                        tex_coord_sign[0]= 1;
+                        b= x_block_shred->GetBlock( x_block_x, y, z );
+                        tex_coord_sign[0]= tex_size;
                     }
                     else
                     {
                         quad->normal= NORMAL_X_NEG;
-                        quad->light= shred->Lightmap( x+1, y, z )&15;
+                        quad->light= x_block_shred->Lightmap( x_block_x, y, z )&15;
                         b= shred->GetBlock( x, y, z );
-                        tex_coord_sign[0]= -1;
+                        tex_coord_sign[0]= -tex_size;
                     }
                     quad->coord[0]= quad->coord[3]= quad->coord[6]= quad->coord[9]= float(X+x+1);
 
@@ -203,7 +250,7 @@ void s_ChunkInfo::GenChunk()
                     quad->coord[8]= quad->coord[5]= float(z+1);
 
                     quad->tc[0]= quad->tc[2]= 0;
-                    quad->tc[4]= quad->tc[6]= tex_size * tex_coord_sign[0];
+                    quad->tc[4]= quad->tc[6]= tex_coord_sign[0];
                     quad->tc[1]= quad->tc[7]= 0;
                     quad->tc[3]= quad->tc[5]= tex_size;
                     quad->tex_id= s_TextureManager::GetTextureId( b->Kind(), b->Sub() );
@@ -216,15 +263,15 @@ void s_ChunkInfo::GenChunk()
                     {
                         quad->normal= NORMAL_Y_POS;
                         quad->light= shred->Lightmap( x, y, z )&15;
-                        b= shred->GetBlock( x, y+1, z );
-                        tex_coord_sign[0]= -1;
+                        b= y_block_shred->GetBlock( x, y_block_y, z );
+                        tex_coord_sign[0]= -tex_size;
                     }
                     else
                     {
                         quad->normal= NORMAL_Y_NEG;
-                        quad->light= shred->Lightmap( x, y+1, z )&15;
+                        quad->light= y_block_shred->Lightmap( x, y_block_y, z )&15;
                         b= shred->GetBlock( x, y, z );
-                        tex_coord_sign[0]= 1;
+                        tex_coord_sign[0]= tex_size;
                     }
                     quad->coord[1]= quad->coord[4]= quad->coord[7]= quad->coord[10]= float(Y+y+1);
                     quad->coord[11]= quad->coord[2]= float(z);
@@ -233,7 +280,7 @@ void s_ChunkInfo::GenChunk()
                     quad->coord[9]= quad->coord[6]= float(X+x+1);
 
                     quad->tc[0]= quad->tc[2]= 0;
-                    quad->tc[4]= quad->tc[6]= tex_size * tex_coord_sign[0];
+                    quad->tc[4]= quad->tc[6]= tex_coord_sign[0];
                     quad->tc[1]= quad->tc[7]= 0;
                     quad->tc[3]= quad->tc[5]= tex_size;
                     quad->tex_id= s_TextureManager::GetTextureId( b->Kind(), b->Sub() );

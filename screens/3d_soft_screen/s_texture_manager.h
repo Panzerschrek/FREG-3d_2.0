@@ -26,7 +26,7 @@ class s_TextureManager
 
     unsigned char* textures_data;
 
-	static unsigned short tex_id_table[ LAST_KIND << 7 ];
+    static unsigned short tex_id_table[ (LAST_KIND << 6) | LAST_SUB ];
 };
 
 

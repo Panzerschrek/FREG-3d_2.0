@@ -44,11 +44,11 @@ frame_count(0)
                 ch->neighbors[1]= nullptr;
 
             if( y != chunk_matrix_size[1]-1 )
-                ch->neighbors[2]= chunks[ (y+1)*chunk_matrix_size[0] ];
+                ch->neighbors[2]= chunks[ x + (y+1)*chunk_matrix_size[0] ];
             else
                 ch->neighbors[2]= nullptr;
             if( y != 0 )
-                ch->neighbors[3]= chunks[ (y-1)*chunk_matrix_size[0] ];
+                ch->neighbors[3]= chunks[ x + (y-1)*chunk_matrix_size[0] ];
             else
                 ch->neighbors[3]= nullptr;
         }
@@ -72,9 +72,11 @@ void s_WorldRenderer::BuildWorld()
     world->Lock();
 
     for( int i= 0; i< chunk_matrix_size[0] * chunk_matrix_size[1]; i++ )
+        chunks[i]->GetTransparency();
+
+    for( int i= 0; i< chunk_matrix_size[0] * chunk_matrix_size[1]; i++ )
     {
         s_ChunkInfo* ch= chunks[i];
-        ch->GetTransparency();
         ch->GetQuadCount();
 
         //allocate memory for front and back quads
@@ -107,9 +109,6 @@ void s_WorldRenderer::Draw()
 
     if( frame_count == 0 )
     {
-        int i= rand();
-        fixed16_t inv= Fixed16Invert( i );
-        printf( "invert of %d is %d\n", i, inv );
         BuildWorld();
     }
     static const unsigned char clear_color[4]= { 223,194,117,64 };
@@ -141,7 +140,7 @@ void s_WorldRenderer::Draw()
     char buffer[500];
 
     int light_normal_table[]= { 230, 230, 240, 240, 255, 255 };
-    float texels_per_pixel= (0.0000152587890625f * 2.0f * 32.0f * 1.3f) / float( screen_size_x );
+    float texels_per_pixel= float(texture_manager->GetTextureSize()) * (0.0000152587890625f * 2.0f * 1.3f) / float( screen_size_x );
 
     view_matrix.Transpose();
     int total_quads = 0;
