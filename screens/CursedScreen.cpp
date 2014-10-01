@@ -73,7 +73,7 @@ void Screen::RePrint() {
     mvwaddstr(actionWin, 3, 0, qPrintable(tr("iNscribe")));
     mvwaddstr(actionWin, 4, 0, qPrintable(tr("Build")));
     mvwaddstr(actionWin, 5, 0, qPrintable(tr("Craft")));
-    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Wield/take oFF")));
+    mvwaddstr(actionWin, 6, 0, qPrintable(tr("Equipment")));
     refresh();
     wrefresh(actionWin);
     updated = false;
@@ -129,43 +129,24 @@ int  Screen::RandomBlink() const { return RandomBit() ? 0 : A_REVERSE; }
 bool Screen::RandomBit()   const { return (randomBlink >>= 1) & blinkOn; }
 
 int Screen::Color(const int kind, const int sub) const {
+    const int color = COLOR_PAIR(VirtScreen::Color(kind, sub));
     switch ( kind ) { // foreground_background
+    case TELEGRAPH: return color | A_BOLD;
     case LIQUID: switch ( sub ) {
-        case WATER:     return COLOR_PAIR( CYAN_BLUE  ) | RandomBlink();
-        case SUB_CLOUD: return COLOR_PAIR(BLACK_WHITE );
-        case ACID:      return COLOR_PAIR(GREEN_GREEN ) |A_BOLD |RandomBlink();
         case H_MEAT:
-        case A_MEAT:    return COLOR_PAIR(BLACK_RED);
-        default:        return COLOR_PAIR(  RED_YELLOW) | RandomBlink();
+        case A_MEAT:
+        case SUB_CLOUD: return color;
+        default:        return color | RandomBlink();
+        case ACID:      return color | RandomBlink() | A_BOLD;
         } break;
-    case FALLING: switch ( sub ) {
-        case WATER: return COLOR_PAIR(  CYAN_WHITE);
-        case SAND:  return COLOR_PAIR(YELLOW_WHITE);
-        } // no break;
     default: switch ( sub ) {
-        default:         return COLOR_PAIR(WHITE_BLACK);
-        case STONE:      return COLOR_PAIR(BLACK_WHITE);
-        case GREENERY:   return COLOR_PAIR(BLACK_GREEN);
-        case WOOD:
-        case HAZELNUT:
-        case SOIL:       return COLOR_PAIR(  BLACK_YELLOW);
-        case SAND:       return COLOR_PAIR(  WHITE_YELLOW);
-        case COAL:       return COLOR_PAIR(  BLACK_WHITE );
-        case IRON:       return COLOR_PAIR(  BLACK_BLACK ) | A_BOLD;
-        case A_MEAT:     return COLOR_PAIR(  WHITE_RED   );
-        case H_MEAT:     return COLOR_PAIR(  BLACK_RED   );
-        case WATER:      return COLOR_PAIR(  WHITE_CYAN  );
-        case GLASS:      return COLOR_PAIR(   BLUE_WHITE );
-        case NULLSTONE:  return COLOR_PAIR(MAGENTA_BLACK ) | A_BOLD;
-        case MOSS_STONE: return COLOR_PAIR(  GREEN_WHITE );
-        case ROSE:       return COLOR_PAIR(    RED_GREEN );
-        case CLAY:       return COLOR_PAIR(  WHITE_RED   );
-        case PAPER:      return COLOR_PAIR(MAGENTA_WHITE );
-        case GOLD:       return COLOR_PAIR(  WHITE_YELLOW) | RandomBlink();
-        case BONE:       return COLOR_PAIR(MAGENTA_WHITE );
-        case EXPLOSIVE:  return COLOR_PAIR(  WHITE_RED   );
-        case DIAMOND:    return COLOR_PAIR(   CYAN_WHITE ) | A_BOLD;
-        case ADAMANTINE: return COLOR_PAIR(   CYAN_BLACK );
+        case GOLD:       return color | RandomBlink();
+        case IRON:
+        case NULLSTONE:
+        case DIAMOND:    return color | A_BOLD;
+        case ACID:
+        case SUB_DUST:   return color | A_BOLD  | A_REVERSE;
+        case FIRE:       return color | A_BLINK | RandomBlink();
         case SKY:
         case STAR:
             if ( w->GetEvernight() ) return COLOR_PAIR(BLACK_BLACK);
@@ -175,20 +156,9 @@ int Screen::Color(const int kind, const int sub) const {
             case TIME_MORNING: return COLOR_PAIR(WHITE_BLUE);
             case TIME_NOON:    return COLOR_PAIR( CYAN_CYAN);
             case TIME_EVENING: return COLOR_PAIR(WHITE_CYAN);
-            }
-        case SUB_DUST: return COLOR_PAIR(BLACK_BLACK ) | A_BOLD | A_REVERSE;
-        case FIRE:     return COLOR_PAIR(  RED_YELLOW) |A_BLINK |RandomBlink();
-        case ACID:     return COLOR_PAIR(GREEN_GREEN ) | A_BOLD | A_REVERSE;
-        }
-    case DWARF: switch ( sub ) {
-        case ADAMANTINE: return COLOR_PAIR( CYAN_BLACK);
-        case DIFFERENT:  return COLOR_PAIR(WHITE_BLACK);
-        default:         return COLOR_PAIR(WHITE_BLUE );
-        }
-    case RABBIT:    return COLOR_PAIR(  RED_WHITE);
-    case PREDATOR:  return COLOR_PAIR(  RED_BLACK);
-    case TELEGRAPH: return COLOR_PAIR( BLUE_BLUE ) | A_BOLD;
-    case MEDKIT:    return COLOR_PAIR(  RED_WHITE);
+            } break;
+        default: return color;
+        } break;
     }
 } // color_pairs Screen::Color(int kind, int sub)
 
@@ -240,7 +210,14 @@ void Screen::ControlPlayer(const int ch) {
     CleanFileToShow();
     /// \todo: ctrl-z (to background) support
     // Q, ctrl-c, ctrl-d, ctrl-q, ctrl-x
-    if ( 'Q'==ch || 3==ch || 4==ch || 17==ch || 24==ch ) {
+    if ( 'Q' == ch
+            || 3 == ch
+            || 4 == ch
+            || 17 == ch
+            || 24 == ch
+            || 'X' == ch
+            || KEY_F(10) == ch )
+    {
         emit ExitReceived();
         return;
     } // else:
@@ -255,59 +232,70 @@ void Screen::ControlPlayer(const int ch) {
         Notify(QString("Pressed key code: %1.").arg(ch));
         #endif
         break;
-    case KEY_UP:    case '8': MovePlayer(NORTH);  break;
-    case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
-    case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
-    case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
+    case 'W': case KEY_UP:    case '8': MovePlayer(NORTH);  break;
+    case 'S': case KEY_DOWN:  case '2': MovePlayer(SOUTH);  break;
+    case 'D': case KEY_RIGHT: case '6': MovePlayer(EAST);   break;
+    case 'A': case KEY_LEFT:  case '4': MovePlayer(WEST);   break;
     case KEY_END:   case '5': player->Move(DOWN); break;
     case '7': MovePlayerDiag(NORTH, WEST); break;
     case '9': MovePlayerDiag(NORTH, EAST); break;
     case '1': MovePlayerDiag(SOUTH, WEST); break;
     case '3': MovePlayerDiag(SOUTH, EAST); break;
+    case '=':
+    case '0': MovePlayer(player->GetDir()); break;
     case ' ': player->Jump(); break;
 
     case '>': player->SetDir(World::TurnRight(player->GetDir())); break;
     case '<': player->SetDir(World::TurnLeft (player->GetDir())); break;
+    case 'V':
     case KEY_NPAGE: player->SetDir(DOWN); break;
+    case '^':
     case KEY_PPAGE: player->SetDir(UP);   break;
 
     case 'I':
     case KEY_HOME: player->Backpack(); break;
     case 8:
+    case KEY_F(8):
     case KEY_DC: // delete
     case KEY_BACKSPACE: player->Damage(); break;
+    case '\n':
     case 13:
-    case 'E':
-    case '\n': player->Use();      break;
-    case  '?': player->Examine();  break;
-    case  '~': player->Inscribe(); break;
+    case KEY_F(2):
+    case 'F': player->Use();      break;
+    case '*':
+    case KEY_F(3):
+    case '?': player->Examine();  break;
+    case KEY_F(4):
+    case '~': player->Inscribe(); break;
     case 27: /* esc */ player->StopUseAll(); break;
 
     case KEY_IC: player->Build(1); break; // insert
     case 'B': SetActionMode(ACTION_BUILD);    break;
     case 'C': SetActionMode(ACTION_CRAFT);    break;
-    case 'D':
     case 'T': SetActionMode(ACTION_THROW);    break;
     case 'N': SetActionMode(ACTION_INSCRIBE); break;
     case 'G':
     case 'O': SetActionMode(ACTION_OBTAIN);   break;
-    case 'F':
-    case 'W': SetActionMode(ACTION_WIELD);    break;
+    case 'E': SetActionMode(ACTION_WIELD);    break;
     case 'U': SetActionMode(ACTION_USE);      break;
-    case 'S':
+    case 'Z':
         if ( player->PlayerInventory() ) {
               player->PlayerInventory()->Shake();
         }
         break;
     case KEY_HELP:
+    case KEY_F(1):
     case 'H': ProcessCommand("help"); break;
+    case KEY_F(5):
     case 'R':
     case 'L': RePrint(); break;
 
     case '-': shiftFocus = -!shiftFocus; break; // move focus down
     case '+': shiftFocus =  !shiftFocus; break; // move focus up
 
+    case KEY_F(12):
     case '!': player->SetCreativeMode( not player->GetCreativeMode() ); break;
+    case KEY_F(9):
     case ':':
     case '/': PassString(previousCommand); // no break
     case '.': ProcessCommand(previousCommand); break;
@@ -559,12 +547,14 @@ void Screen::PrintNormal(WINDOW * const window, const dirs dir) const {
             waddch(window, ' ');
         }
     }
+
     if ( dir > DOWN ) {
         const Block * const block = player->GetBlock();
         wattrset(window, Color(block->Kind(), block->Sub()));
         mvwaddstr(window, player->Y()-start_y+1, (player->X()-start_x)*2+2,
             qPrintable(arrows[player->GetDir()]));
     }
+
     PrintTitle(window, UP==dir ? UP : DOWN);
     Arrows(window, (player->X()-start_x)*2+1, player->Y()-start_y+1, true);
     wrefresh(window);

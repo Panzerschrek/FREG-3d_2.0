@@ -126,6 +126,7 @@ public:
     virtual void ControlPlayer(int command);
 
     static char CharName(int kind, int sub);
+    static int  Color   (int kind, int sub);
 
 signals:
     /// This is emitted when input receives exit key.
@@ -189,7 +190,6 @@ private slots:
 
 protected:
     World * GetWorld() const;
-
 
     World  * const w;
     Player * const player;

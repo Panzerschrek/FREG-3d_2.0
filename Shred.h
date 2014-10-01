@@ -22,20 +22,14 @@
 
 #include <QLinkedList>
 #include "header.h"
+#include "Weather.h"
 
 class World;
 class Block;
 class Active;
 class Falling;
 
-enum weathers {
-    WEATHER_CLEAR,
-    WEATHER_RAIN,
-    WEATHER_DEW,
-    WEATHER_CLOUDS
-};
-
-class Shred final {
+class Shred final : public Weather {
 public:
      Shred(int shred_x, int shred_y, long longi, long lati);
     ~Shred();
@@ -176,6 +170,8 @@ private:
     QLinkedList<Active *> activeListFrequent;
     QLinkedList<Active * const> shiningList;
     QLinkedList<Falling *> fallList;
+
+    weathers weather;
 };
 
 #endif // SHRED_H

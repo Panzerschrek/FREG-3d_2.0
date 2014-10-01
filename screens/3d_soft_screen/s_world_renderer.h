@@ -23,6 +23,9 @@ public:
 
 private:
     void BuildWorld();//initial world building
+    void InitClipPlanes();
+
+    int ClipWorldQuad( const s_WorldQuad* quad );//returns new vertex count
 
 
 
@@ -30,6 +33,8 @@ private:
     //vectors, matrices
     m_Vec3 cam_pos, cam_ang;
     m_Mat4 view_matrix;
+    Plane clip_planes[5];
+    float fov_x, fov_y;
 
     int frame_count;
 

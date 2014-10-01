@@ -173,7 +173,7 @@ s_TextureManager::s_TextureManager():
             if( BlockManager::IsValid( kind, sub ) )
             {
 
-                int color= GetBlockColor( kind, sub )-1;
+                int color= VirtScreen::Color( kind, sub) -1;
                 unsigned char final_color[6];
                 for( int i= 0; i< 6; i++ )
                     final_color[i]= ((color>>i)&1) * color_mul + color_add;

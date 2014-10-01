@@ -26,6 +26,7 @@
 #include "Shred.h"
 #include "BlockManager.h"
 #include "DeferredAction.h"
+#include "Weather.h"
 
 #ifdef QT_NO_DEBUG
 const bool COMMANDS_ALWAYS_ON = false;
@@ -314,6 +315,9 @@ void Player::ProcessCommand(QString command) {
     const QMutexLocker locker(world->GetLock());
     switch ( UniqueIntFromString(request.constData()) ) {
     case UniqueIntFromString(""): break;
+    case UniqueIntFromString("weather"):
+        emit Notify(Weather::GetWeatherString(GetShred()->GetWeather()));
+        break;
     case UniqueIntFromString("give"):
     case UniqueIntFromString("get" ): {
         if ( ForbiddenAdminCommands() ) return;

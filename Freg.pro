@@ -132,7 +132,8 @@ HEADERS += \
     blocks/Containers.h \
     blocks/RainMachine.h \
     blocks/Armour.h \
-	blocks/Filter.h
+	blocks/Filter.h \
+	Weather.h
 SOURCES += \
     BlockManager.cpp \
     CraftManager.cpp \
@@ -160,7 +161,8 @@ SOURCES += \
     blocks/RainMachine.cpp \
     blocks/Armour.cpp \
     blocks/Animal.cpp \
-	blocks/Filter.cpp
+	blocks/Filter.cpp \
+	Weather.cpp
 
 INCLUDEPATH += .
 

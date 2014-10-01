@@ -17,31 +17,27 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef RAINMACHINE_H
-#define RAINMACHINE_H
+#ifndef WEATHER_H
+#define WEATHER_H
 
-#include "blocks/Inventory.h"
-#include "blocks/Active.h"
-#include "Shred.h"
+#include <QString>
 
-class RainMachine : public Active, public Inventory {
-    Q_OBJECT
-public:
-    RainMachine(int sub, int id);
-    RainMachine(QDataStream & stream, int sub, int id);
-
-    void DoRareAction() override;
-    int  ShouldAct() const override;
-    void ReceiveSignal(QString) override;
-    void Damage(int dmg, int dmg_kind) override;
-    void SaveAttributes(QDataStream &) const override;
-    QString FullName() const override;
-    Inventory * HasInventory() override;
-    usage_types Use(Block * who) override;
-    inner_actions ActInner();
-
-private:
-    bool isOn;
+enum weathers {
+    WEATHER_CLEAR,
+    WEATHER_RAIN,
+    WEATHER_DEW,
+    WEATHER_CLOUDS
 };
 
-#endif // RAINMACHINE_H
+class Weather {
+public:
+    void SetWeather(weathers);
+    weathers GetWeather() const;
+
+    static QString GetWeatherString(weathers);
+
+private:
+    weathers weather;
+};
+
+#endif // WEATHER_H

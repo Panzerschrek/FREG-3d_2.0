@@ -17,31 +17,17 @@
     * You should have received a copy of the GNU General Public License
     * along with FREG. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef RAINMACHINE_H
-#define RAINMACHINE_H
+#include <QObject>
+#include "Weather.h"
 
-#include "blocks/Inventory.h"
-#include "blocks/Active.h"
-#include "Shred.h"
+void Weather::SetWeather(const weathers new_weather) { weather = new_weather; }
+weathers Weather::GetWeather() const { return weather; }
 
-class RainMachine : public Active, public Inventory {
-    Q_OBJECT
-public:
-    RainMachine(int sub, int id);
-    RainMachine(QDataStream & stream, int sub, int id);
-
-    void DoRareAction() override;
-    int  ShouldAct() const override;
-    void ReceiveSignal(QString) override;
-    void Damage(int dmg, int dmg_kind) override;
-    void SaveAttributes(QDataStream &) const override;
-    QString FullName() const override;
-    Inventory * HasInventory() override;
-    usage_types Use(Block * who) override;
-    inner_actions ActInner();
-
-private:
-    bool isOn;
-};
-
-#endif // RAINMACHINE_H
+QString Weather::GetWeatherString(const weathers w) {
+    switch ( w ) {
+    case WEATHER_CLEAR:  return QObject::tr("Clear");
+    case WEATHER_RAIN:   return QObject::tr("Rain");
+    case WEATHER_DEW:    return QObject::tr("Dew");
+    case WEATHER_CLOUDS: return QObject::tr("Clouds");
+    }
+}

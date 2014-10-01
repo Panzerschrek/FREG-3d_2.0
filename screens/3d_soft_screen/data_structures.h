@@ -2,6 +2,7 @@
 #define DATA_STRUCTURES_H
 #include "../../header.h"
 #include "psr/psr.h"
+#include "../math_lib/vec.h"
 
 //s_ prefix means softwre rendering types
 class Shred;
@@ -28,6 +29,20 @@ struct s_WorldQuad
 	unsigned int tex_id;
 	BlockNormal normal;
 		
+};
+
+
+struct Plane
+{
+   m_Vec3 toVec3()const
+   {
+       return m_Vec3( v[0], v[1], v[2] );
+   }
+   float& dst()
+   {
+       return v[3];
+   }
+   float v[4];
 };
 
 
@@ -71,6 +86,9 @@ struct s_ChunkInfo
     void GetTransparency();
     //update chunk transparency in cube [mins;maxs]. coordinates - chunk relative
     void GetTransparencyInCube( int x_min, int x_max, int y_min, int y_max, int z_min, int z_max );
+
+
+    bool IsBehindPlane( const Plane* plane );
 };
 
 

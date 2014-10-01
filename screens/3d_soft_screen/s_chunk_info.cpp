@@ -31,8 +31,11 @@ void s_ChunkInfo::GetTransparency()
             unsigned char* t= transparency + BLOCK_LINEAR_ADDR(x,y,0);
             for( int z= 0; z< HEIGHT; z++, t++ )
             {
-                unsigned char block_t= shred->GetBlock( x, y, z )->Transparent() &3;
-                *t= block_t;
+                Block* b= shred->GetBlock( x, y, z );
+                if( b == NULL )
+                    *t= 0;
+                else
+                    *t= b->Transparent() &3;
             }
         }//for y
 }
@@ -297,4 +300,34 @@ void s_ChunkInfo::GenChunk()
     }//for x
 
     //TODO add generation of quad in chunk borders
+}
+
+
+bool s_ChunkInfo::IsBehindPlane( const Plane* plane )
+{
+    float shred_x= float( shred->Latitude() * SHRED_WIDTH );
+    float shred_y= float( shred->Longitude() * SHRED_WIDTH );
+    for( int x= 0; x< 2; x++ )
+        for( int y= 0; y< 2; y++ )
+            for( int z= 0; z< 2; z++ )
+            {
+                float v[3];
+                v[0]= shred_x + float(x*SHRED_WIDTH);
+                v[1]= shred_y + float(y*SHRED_WIDTH);
+                v[2]= (z == 0) ?  float(min_geometry_height) : float(max_geometry_height+1);
+
+                float dot= v[0] * plane->v[0] + v[1] * plane->v[1] + v[2] * plane->v[2];
+                if( dot > plane->v[3] )
+                    return false;
+            }
+    return true;
+
+    /*float v[3];
+    v[0]= shred->Latitude() * SHRED_WIDTH + float(SHRED_WIDTH/2);
+    v[1]= shred->Longitude() * SHRED_WIDTH + float(SHRED_WIDTH/2);
+    v[2]= float((min_geometry_height + max_geometry_height)>>1);
+    float dot= v[0] * plane->v[0] + v[1] * plane->v[1] + v[2] * plane->v[2];
+    if( dot > plane->v[3] )
+        return false;
+    return true;*/
 }

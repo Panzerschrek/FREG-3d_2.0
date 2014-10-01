@@ -40,6 +40,7 @@ void RainMachine::SaveAttributes(QDataStream & stream) const {
 }
 
 void RainMachine::DoRareAction() {
+    fprintf(stderr, "hello\n");
     if ( not isOn ) return;
     if ( AIR == GetInvSub(0) ) {
         if ( qrand() % 5 ) {
@@ -62,8 +63,11 @@ Inventory * RainMachine::HasInventory() { return this; }
 
 void RainMachine::Damage(const int dmg, const int dmg_kind) {
     if ( dmg_kind >= DAMAGE_PUSH_UP ) {
-        isOn = not isOn;
+        GetShred()->SetWeather( (isOn = not isOn) ?
+            WEATHER_RAIN : WEATHER_CLEAR );
     } else {
         Block::Damage(dmg, dmg_kind);
     }
 }
+
+inner_actions RainMachine::ActInner() { return INNER_ACTION_NONE; }

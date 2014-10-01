@@ -76,6 +76,61 @@ void VirtScreen::ActionXyz(int * x, int * y, int * z) const {
 
 World * VirtScreen::GetWorld() const { return w; }
 
+int VirtScreen::Color(const int kind, const int sub) {
+    switch ( kind ) { // foreground_background
+    case LIQUID: switch ( sub ) {
+        case WATER:     return CYAN_BLUE;
+        case SUB_CLOUD: return BLACK_WHITE;
+        case ACID:      return GREEN_GREEN;
+        case H_MEAT:
+        case A_MEAT:    return BLACK_RED;
+        default:        return RED_YELLOW;
+        } break;
+    case FALLING: switch ( sub ) {
+        case WATER: return   CYAN_WHITE;
+        case SAND:  return YELLOW_WHITE;
+        } // no break;
+    default: switch ( sub ) {
+        default:         return WHITE_BLACK;
+        case STONE:      return BLACK_WHITE;
+        case GREENERY:   return BLACK_GREEN;
+        case WOOD:
+        case HAZELNUT:
+        case SOIL:       return   BLACK_YELLOW;
+        case SAND:       return   WHITE_YELLOW;
+        case COAL:       return   BLACK_WHITE;
+        case IRON:       return   BLACK_BLACK;
+        case A_MEAT:     return   WHITE_RED;
+        case H_MEAT:     return   BLACK_RED;
+        case WATER:      return   WHITE_CYAN;
+        case GLASS:      return    BLUE_WHITE;
+        case NULLSTONE:  return MAGENTA_BLACK;
+        case MOSS_STONE: return   GREEN_WHITE;
+        case ROSE:       return     RED_GREEN;
+        case CLAY:       return   WHITE_RED;
+        case PAPER:      return MAGENTA_WHITE;
+        case GOLD:       return   WHITE_YELLOW;
+        case BONE:       return MAGENTA_WHITE;
+        case EXPLOSIVE:  return   WHITE_RED;
+        case DIAMOND:    return    CYAN_WHITE;
+        case ADAMANTINE: return    CYAN_BLACK;
+        case SKY:
+        case STAR:       return   WHITE_BLACK;
+        case SUB_DUST:   return   BLACK_BLACK;
+        case FIRE:       return     RED_YELLOW;
+        case ACID:       return   GREEN_GREEN;
+        }
+    case DWARF: switch ( sub ) {
+        case ADAMANTINE: return  CYAN_BLACK;
+        default:         return WHITE_BLUE ;
+        }
+    case RABBIT:    return  RED_WHITE;
+    case PREDATOR:  return  RED_BLACK;
+    case TELEGRAPH: return BLUE_BLUE;
+    case MEDKIT:    return  RED_WHITE;
+    }
+} // color_pairs Screen::Color(int kind, int sub)
+
 char VirtScreen::CharName(const int kind, const int sub) {
     switch ( static_cast<kinds>(kind) )  {
     case BUSH:   return ';';

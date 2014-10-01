@@ -25,7 +25,7 @@
 #include "blocks/Inventory.h"
 
 const quint8 DATASTREAM_VERSION = QDataStream::Qt_5_2;
-const quint8 CURRENT_SHRED_FORMAT_VERSION = 12;
+const quint8 CURRENT_SHRED_FORMAT_VERSION = 13;
 
 const int RAIN_IS_DEW = 1;
 
@@ -42,18 +42,19 @@ bool Shred::LoadShred() {
         GetWorld()->GetShredData(longitude, latitude);
     if ( data == nullptr ) return false;
     QDataStream in(*data);
-    quint8 shredFormatVersion;
-    in >>  shredFormatVersion;
-    if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != shredFormatVersion) ) {
+    quint8 read;
+    in >>  read;
+    if ( Q_UNLIKELY(CURRENT_SHRED_FORMAT_VERSION != read) ) {
         fprintf(stderr,
             "%s: Shred format: %d (must be %d). Generating new shred.\n",
-            Q_FUNC_INFO, shredFormatVersion, CURRENT_SHRED_FORMAT_VERSION);
+            Q_FUNC_INFO, read, CURRENT_SHRED_FORMAT_VERSION);
         return false;
     } // else:
     in.setVersion(DATASTREAM_VERSION);
-    quint8 read_type;
-    in >>  read_type;
-    type = static_cast<shred_type>(read_type);
+    in >> read;
+    type = static_cast<shred_type>(read);
+    in >> read;
+    weather = static_cast<weathers>(read);
     Block * const null_stone = block_manager.Normal(NULLSTONE);
     Block * const air        = block_manager.Normal(AIR);
     SetAllLightMapNull();
@@ -98,7 +99,8 @@ Shred::Shred(const int shred_x, const int shred_y,
         activeListAll(),
         activeListFrequent(),
         shiningList(),
-        fallList()
+        fallList(),
+        weather(WEATHER_CLEAR)
 {
     if ( LoadShred() ) return; // successfull loading
     // new shred generation:
@@ -146,7 +148,7 @@ Shred::~Shred() {
     QDataStream outstr(shred_data, QIODevice::WriteOnly);
     outstr << CURRENT_SHRED_FORMAT_VERSION;
     outstr.setVersion(DATASTREAM_VERSION);
-    outstr << quint8(GetTypeOfShred());
+    outstr << quint8(GetTypeOfShred()) << quint8(weather);
     for (int x=0; x<SHRED_WIDTH; ++x)
     for (int y=0; y<SHRED_WIDTH; ++y) {
         int height = HEIGHT-2;

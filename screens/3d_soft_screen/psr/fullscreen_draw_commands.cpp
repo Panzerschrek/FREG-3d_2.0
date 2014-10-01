@@ -84,7 +84,7 @@ extern "C" void PRast_MakeGammaCorrection( const unsigned char* gamma_table )
 #endif
 }
 
-#define FOG_TABLE_SIZE 4096
+#define FOG_TABLE_SIZE 8192
 unsigned char fog_table[FOG_TABLE_SIZE];
 
 
@@ -142,7 +142,7 @@ extern "C" void PRast_AddFullscreenExponentialFog( float fog_half_distance, cons
 			pxor mm0, mm0
 next_pixel:
 			movzx edx, word ptr[edi]
-			shr edx, 4 //log2( depth2table_convert_k ). Must be changed, if depth2table_convert_k changed
+            shr edx, 3 //log2( depth2table_convert_k ). Must be changed, if depth2table_convert_k changed
 			movzx eax, byte ptr[ fog_table + edx ]
 			mov edx, 255
 			mov word ptr[blend_factor  ], ax
